@@ -1,0 +1,33 @@
+[
+    {
+        "referencia": "3839",
+        "montado": false,
+        "acrescimos": {
+            "imposto": 12.0,
+            "frete": 5.0,
+            "comissao": 5.0,
+            "lucro": 20.0
+        },
+        "respostas": [
+            {
+                "peso": 0.005,
+                "valor_material": 13.03,
+                "cavidades": 48,
+                "tempo_ciclo": 30.0,
+                "pecas_por_satelite": 1296,
+                "metalizado_ou_pintado": 1
+            }
+        ],
+        "custos": {
+            "pecas_por_hora": 5760.0,
+            "custo_injecao": 0.0174,
+            "custo_material": 0.0651,
+            "custo_pintura": 0.0386,
+            "mao_de_obra": 0.04,
+            "custo_total": 0.1611,
+            "valor_total": 0.1611
+        },
+        "custo_total": 0.1611,
+        "valor_total": 0.1611
+    }
+]
