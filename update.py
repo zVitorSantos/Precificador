@@ -1,6 +1,8 @@
 import requests
 import os
 
+os.system("chcp 65001")
+
 def check_for_updates():
     # Lê a versão atual do arquivo version.txt local
     with open("version.txt", "r") as file:
@@ -27,8 +29,7 @@ def check_for_updates():
         with open("main_new.exe", "wb") as file:
             file.write(response.content)
 
-        # Renomeia o antigo arquivo .exe e substitui pelo novo
-        os.rename("main.exe", "main_old.exe")
+        # Substitui o antigo arquivo .exe pelo novo
         os.rename("main_new.exe", "main.exe")
 
         # Atualiza a current_version no script

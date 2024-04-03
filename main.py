@@ -1,5 +1,8 @@
 import json
 import os
+import requests
+
+os.system("chcp 65001")
 
 def set_console_size():
     os.system("mode con: cols=50 lines=35")
@@ -23,12 +26,12 @@ def menu():
     produtos = carregar_produtos()
     while True:
         clear_screen()
-        print("----------------- Menu -----------------")
+        print("Programa de Precificação de Produtos\n")
         print("1. Cadastrar Produto")
         print("2. Produtos Cadastrados")
-        print("4. Configurações")
-        print("5. Sair")
-        opcao = input("Escolha uma opção: ")
+        print("3. Configurações")
+        print("4. Sair")
+        opcao = input("\nEscolha uma opção: ")
         clear_screen()
         if opcao == "1":
             precificar_produto()
@@ -57,10 +60,24 @@ def menu():
                 elif opcao_produto == "4":
                     break
         elif opcao == "3":
-            clear_screen()
-            referencia = input("Digite a referência da peça: ")
-            atualizar_produto(referencia)
-        elif opcao == "5":
+            while True:
+                clear_screen()
+                print("Configurações\n")
+                print("1. Valores Padrões")
+                print("2. Info")
+                print("3. Voltar")
+                opcao_config = input("\nEscolha uma opção: ")
+                clear_screen()
+                if opcao_config == "1":
+                    # Aqui você pode adicionar o código para manipular os valores padrões
+                    pass
+                elif opcao_config == "2":
+                    show_info()
+                    input("\nPressione qualquer tecla para continuar...")
+                elif opcao_config == "3":
+                    break
+            
+        elif opcao == "4":
             clear_screen()
             break
         
@@ -149,6 +166,11 @@ def atualizar_produto(referencia):
     # Salvar os produtos atualizados no arquivo JSON
     with open('produtos.json', 'w') as f:
         json.dump(produtos, f, indent=4)
+        
+def show_info():
+    with open("version.txt", "r") as file:
+        current_version = file.read().strip()
+    print(f"Versão atual do programa: {current_version}")
 
 def precificar_produto():
     referencia = input("Digite a referência do produto: ")
@@ -218,7 +240,7 @@ def precificar_produto():
 
     while True:
         clear_screen()
-        opcao = input("\nVer relatório da peça = 0\nVoltar ao Menu = 1\nEscolha uma opção: ")
+        opcao = input("\nVer relatório da peça = 0\nVoltar ao Menu = 1\n\nEscolha uma opção: ")
         if opcao == "0":
             salvar_produto(produto)
             gerar_relatorio(produtos)
@@ -327,7 +349,7 @@ def calcular(respostas):
     }
     
 def gerar_relatorio(produtos):
-    tipo_relatorio = input("\nQual tipo de relatório você deseja?\nParcial = 'P'\nCompleto = 'C'\nEscolha uma opção: ").upper()
+    tipo_relatorio = input("\nQual tipo de relatório você deseja?\nParcial = 'P'\nCompleto = 'C'\n\nEscolha uma opção: ").upper()
     if tipo_relatorio == "P":
         exibir_relatorio(produtos)
     elif tipo_relatorio == "C":
