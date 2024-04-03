@@ -14,10 +14,10 @@ def check_for_updates():
         exec(open("update.py").read())
     except Exception as e:
         print(f"\nErro ao verificar atualizações: \n{e}")
+        
+    input("\nPressione qualquer tecla para continuar...")
 
 check_for_updates()
-
-input("\nPressione qualquer tecla para continuar...")
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')

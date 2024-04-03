@@ -1,8 +1,6 @@
 import requests
 import os
 
-os.system("chcp 65001")
-
 def check_for_updates():
     # Lê a versão atual do arquivo version.txt local
     with open("version.txt", "r") as file:
@@ -20,7 +18,7 @@ def check_for_updates():
 
     # Compara a versão mais recente com a versão atual
     if latest_version > current_version:
-        print("Uma nova versão está disponível. Atualizando...")
+        print("Uma nova versao esta disponivel. Atualizando...")
 
         # Faz uma solicitação GET para baixar o novo arquivo .exe
         response = requests.get(file_url)
@@ -39,8 +37,8 @@ def check_for_updates():
         with open("version.txt", "w") as file:
             file.write(current_version)
 
-        print("Atualização concluída.")
+        print("Atualizacao concluida.")
     else:
-        print("Você já está na versão mais recente.")
+        print("Voce ja esta na versao mais recente.")
 
 check_for_updates()
