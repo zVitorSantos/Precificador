@@ -1,6 +1,21 @@
 import json
 import os
 
+def set_console_size():
+    os.system("mode con: cols=50 lines=35")
+
+set_console_size()
+
+def check_for_updates():
+    try:
+        exec(open("update.py").read())
+    except Exception as e:
+        print(f"\nErro ao verificar atualizações: \n{e}")
+
+check_for_updates()
+
+input("\nPressione qualquer tecla para continuar...")
+
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
