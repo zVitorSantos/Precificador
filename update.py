@@ -4,7 +4,7 @@ import subprocess
 
 def check_for_updates():
     # URL do arquivo no GitHub que contém a versão mais recente do seu aplicativo
-    version_url = "https://raw.githubusercontent.com/username/repo/master/version.txt"
+    version_url = "https://raw.githubusercontent.com/zVitorSantos/Precificador/main/version.txt"
 
     # URL do arquivo .exe no GitHub que você deseja baixar se houver uma nova versão
     file_url = "https://github.com/username/repo/releases/download/v1.0.1/app.exe"
