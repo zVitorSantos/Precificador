@@ -1,1 +1,1 @@
-Para rodar somente iniciar o create.py
+Para fazer o build somente iniciar o create.py

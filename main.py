@@ -1,11 +1,11 @@
 import json
 import os
+import sys
 import requests
 import subprocess
 
 def set_console_size():
-    os.system("mode con: cols=50 lines=35")
-
+    os.system("mode con: cols=70 lines=23")
 set_console_size()
 
 def clear_screen():
@@ -30,16 +30,17 @@ def check_for_updates():
 
         # Compara a versão mais recente com a versão atual
         if latest_version > current_version:
-            print("Uma nova versão está disponível. Atualizando...")
+            print("Uma nova versão está disponível. Atualizando...\n")
             # Inicia o update.exe
-            subprocess.run(['update.exe'])
+            subprocess.Popen(['update.exe'])
             # Termina o main.exe
-            exit()
+            sys.exit()
         else:
             print("Versão mais recente.")
             
     except requests.exceptions.RequestException as e:
         print(f"Erro ao verificar atualizações: {e}")
+        input("\nPressione qualquer tecla para continuar...")
 
 check_for_updates()
 
@@ -62,7 +63,7 @@ def menu():
                 for produto in produtos:
                     clear_screen()
                     print("Ref:", produto["referencia"])
-                opcao_produto = input("\n1. Atualizar Produto.\n2. Excluir Produto\n3. Gerar Relatório\n4. Voltar\n Escolha: ").upper()
+                opcao_produto = input("\n1. Atualizar Produto.\n2. Excluir Produto\n3. Gerar Relatório\n4. Voltar\n\nEscolha: ").upper()
                 if opcao_produto == "1":
                     clear_screen()
                     referencia = input("Digite a referência da peça que deseja atualizar: ")

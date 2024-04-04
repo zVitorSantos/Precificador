@@ -19,7 +19,7 @@ if os.path.exists(zip_file_path):
 
 # Cria o diretório Precificador v{version} dentro de dist se ele não existir
 os.makedirs(f"./dist/Precificador-v{version}", exist_ok=True)
-
+0
 # Copia os executáveis e o version.txt para o diretório Precificador v{version}
 shutil.copy("./dist/main.exe", f"./dist/Precificador-v{version}")
 shutil.copy("./dist/update.exe", f"./dist/Precificador-v{version}")
