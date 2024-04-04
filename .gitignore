@@ -1,3 +1,8 @@
 main.exe
 main.spec
+update.exe
+update.spec
 build/
+dist/
+spec/
+workflow.md

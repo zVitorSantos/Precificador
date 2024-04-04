@@ -1,12 +1,16 @@
 import json
 import os
 import requests
+import subprocess
 
 def set_console_size():
     os.system("mode con: cols=50 lines=35")
 
 set_console_size()
 
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
 def check_for_updates():
     try:
         # URL do arquivo no GitHub que contém a versão mais recente do CLI
@@ -24,31 +28,13 @@ def check_for_updates():
             # Se o arquivo version.txt não for encontrado, define a versão atual como 0
             current_version = "0"
 
-        # URL do arquivo .exe no GitHub que você deseja baixar se houver uma nova versão
-        file_url = f"https://github.com/zVitorSantos/Precificador/releases/download/v{latest_version}/main.exe"
-
         # Compara a versão mais recente com a versão atual
         if latest_version > current_version:
             print("Uma nova versão está disponível. Atualizando...")
-
-            # Faz uma solicitação GET para baixar o novo arquivo .exe
-            response = requests.get(file_url)
-
-            # Substitui o antigo arquivo .exe pelo novo
-            with open("main_new.exe", "wb") as file:
-                file.write(response.content)
-
-            # Substitui o antigo arquivo .exe pelo novo
-            os.rename("main_new.exe", "main.exe")
-
-            # Atualiza a current_version no script
-            current_version = latest_version
-
-            # Atualiza a current_version no arquivo version.txt
-            with open("version.txt", "w") as file:
-                file.write(current_version)
-
-            print("Atualização concluída.")
+            # Inicia o update.exe
+            subprocess.run(['update.exe'])
+            # Termina o main.exe
+            exit()
         else:
             print("Versão mais recente.")
             
@@ -56,9 +42,6 @@ def check_for_updates():
         print(f"Erro ao verificar atualizações: {e}")
 
 check_for_updates()
-
-def clear_screen():
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 def menu():
     produtos = carregar_produtos()
