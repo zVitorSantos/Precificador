@@ -22,7 +22,7 @@ shutil.copy("./version.txt", f"./dist/Precificador v{version}")
 shutil.make_archive(f"./dist/Precificador v{version}", 'zip', "./dist", f"Precificador v{version}")
 
 # Exclui o diretório Precificador v{version}
-shutil.rmtree(f"./build/Precificador v{version}")
+shutil.rmtree(f"./dist/Precificador v{version}")
 
 # Exclui os arquivos exe
 os.remove("./dist/main.exe")
