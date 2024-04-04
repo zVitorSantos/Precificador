@@ -1,5 +1,7 @@
 import os
 import requests
+import zipfile
+import shutil
 
 def update():
     try:
@@ -10,24 +12,32 @@ def update():
         response = requests.get(version_url)
         latest_version = response.text.strip()
 
-        # URL do arquivo .exe no GitHub que você deseja baixar
-        file_url = f"https://github.com/zVitorSantos/Precificador/releases/download/v{latest_version}/main.exe"
+        # URL do arquivo .zip no GitHub que você deseja baixar
+        file_url = f"https://github.com/zVitorSantos/Precificador/releases/download/v{latest_version}/Precificador.zip"
 
         print("Baixando a nova versão...")
 
-        # Faz uma solicitação GET para baixar o novo arquivo .exe
+        # Faz uma solicitação GET para baixar o novo arquivo .zip
         response = requests.get(file_url)
 
-        # Substitui o antigo arquivo .exe pelo novo
-        with open("main_new.exe", "wb") as file:
+        # Salva o novo arquivo .zip
+        with open("Precificador.zip", "wb") as file:
             file.write(response.content)
 
+        # Descompacta o arquivo .zip
+        with zipfile.ZipFile("Precificador.zip", 'r') as zip_ref:
+            zip_ref.extractall(".")
+
         # Substitui o antigo arquivo .exe pelo novo
-        os.rename("main_new.exe", "main.exe")
+        os.remove("main.exe")
+        os.rename("./Precificador/main.exe", "main.exe")
 
         # Atualiza a current_version no arquivo version.txt
         with open("version.txt", "w") as file:
             file.write(latest_version)
+
+        # Deleta o que sobrou na pasta Precificador
+        shutil.rmtree("Precificador")
 
         print("Atualização concluída.")
             
