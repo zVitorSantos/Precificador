@@ -19,7 +19,7 @@ with open("version.txt", "r") as file:
     version = file.read().strip()
 
 # Cria um arquivo zip do diretório Precificador com a versão no nome
-shutil.make_archive(f"Precificador-v{version}", 'zip', "./Precificador")
+shutil.make_archive(f"Precificador-v{version}/Precificador", 'zip', ".")
 
 # Exclui o diretório Precificador
 shutil.rmtree("Precificador")
