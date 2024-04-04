@@ -11,7 +11,7 @@ with open("version.txt", "r") as file:
     version = file.read().strip()
 
 # Cria o diretório Precificador v{version} dentro de dist se ele não existir
-os.makedirs(f"./dist/Precificador v{version}", exist_ok=True)
+os.makedirs(f"./dist/Precificador-v{version}", exist_ok=True)
 
 # Copia os executáveis e o version.txt para o diretório Precificador v{version}
 shutil.copy("./dist/main.exe", f"./dist/Precificador v{version}")
@@ -22,7 +22,7 @@ shutil.copy("./version.txt", f"./dist/Precificador v{version}")
 shutil.make_archive(f"./dist/Precificador v{version}", 'zip', "./dist", f"Precificador v{version}")
 
 # Exclui o diretório Precificador v{version}
-shutil.rmtree(f"./dist/Precificador v{version}")
+shutil.rmtree(f"./dist/Precificador-v{version}")
 
 # Exclui os arquivos exe
 os.remove("./dist/main.exe")
