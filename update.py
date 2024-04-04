@@ -21,11 +21,11 @@ def update():
         response = requests.get(file_url)
 
         # Salva o novo arquivo .zip
-        with open(f"Precificador v{latest_version}.zip", "wb") as file:
+        with open(f"Precificador-v{latest_version}.zip", "wb") as file:
             file.write(response.content)
 
         # Descompacta o arquivo .zip
-        with zipfile.ZipFile(f"Precificador v{latest_version}.zip", 'r') as zip_ref:
+        with zipfile.ZipFile(f"Precificador-v{latest_version}.zip", 'r') as zip_ref:
             zip_ref.extractall(".")
 
         # Substitui o antigo arquivo .exe pelo novo
