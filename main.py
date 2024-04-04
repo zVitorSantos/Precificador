@@ -2,8 +2,6 @@ import json
 import os
 import requests
 
-os.system("chcp 65001")
-
 def set_console_size():
     os.system("mode con: cols=50 lines=35")
 
