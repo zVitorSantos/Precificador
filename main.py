@@ -47,6 +47,32 @@ def clear_screen():
 def menu():
     produtos = carregar_produtos()
     
+    # Verifique se o arquivo config.json existe
+    if not os.path.exists('config.json'):
+        # Se não existir, crie o arquivo com valores padrão
+        config = {
+            'config_acresimos': {
+                'imposto': 12.0,
+                'frete': 5.0,
+                'comissao': 5.0,
+                'lucro': 10.0
+            },
+            'config_calcular': {
+                'mao_de_obra': 0.04,
+                'custo_injecao': 100.00,
+                'custo_pintura_metalizada': 50,
+                'custo_pintura_normal': 40
+            },
+            'materiais': {
+                'PP': 12.15,
+                'ABS': 13.03,
+                'TPU': 33.10,
+                'PVC': 15.47
+            }
+        }
+        with open('config.json', 'w') as f:
+            json.dump(config, f, indent=4)
+    
     def produto_existe(referencia):
                     for produto in produtos:
                         if produto["referencia"] == referencia:
@@ -65,49 +91,62 @@ def menu():
         if opcao == "1":
             precificar_produto()
         elif opcao == "2":
-            while True:
-                clear_screen()
-                for produto in produtos:
-                    clear_screen()
-                    print("Ref:", produto["referencia"])
-                opcao_produto = input("\n1. Atualizar Produto.\n2. Excluir Produto\n3. Gerar Relatório\n4. Voltar\n\nEscolha: ").upper()
-
+            if not produtos:
+                print("Nenhum produto cadastrado.")
                 while True:
+                    opcao_produto = input("\n1. Cadastrar Produto.\n2. Voltar\n\nEscolha: ").upper()
                     if opcao_produto == "1":
                         clear_screen()
-                        referencia = input("Digite a referência da peça que deseja atualizar: ")
-                        if produto_existe(referencia):
-                            atualizar_produto(referencia)
-                        else:
-                            print("Referência do produto não encontrada.")
-                            opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
-                            if opcao == "2":
-                                break
-                    elif opcao_produto == "2":
-                        clear_screen()
-                        referencia = input("Digite a referência da peça que deseja excluir: ")
-                        if produto_existe(referencia):
-                            excluir_produto(referencia)
-                        else:
-                            print("Referência do produto não encontrada.")
-                            opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
-                            if opcao == "2":
-                                break
-                    elif opcao_produto == "3":
-                        clear_screen()
-                        referencia = input("Digite a referência da peça que deseja gerar o relatório: ")
-                        if produto_existe(referencia):
-                            for produto in produtos:
-                                if produto["referencia"] == referencia:
-                                    gerar_relatorio([produto])
-                                    break
-                        else:
-                            print("Referência do produto não encontrada.")
-                            opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
-                            if opcao == "2":
-                                break
-                    elif opcao_produto == "4":
+                        precificar_produto()
                         break
+                    elif opcao_produto == "2":
+                        break
+                    else:
+                        print("Por favor, escolha uma opção válida.")
+            else:
+                while True:
+                    clear_screen()
+                    for produto in produtos:
+                        clear_screen()
+                        print("Ref:", produto["referencia"])
+                    opcao_produto = input("\n1. Atualizar Produto.\n2. Excluir Produto\n3. Gerar Relatório\n4. Voltar\n\nEscolha: ").upper()
+                    while True:
+                        if opcao_produto == "1":
+                            clear_screen()
+                            referencia = input("Digite a referência da peça que deseja atualizar: ")
+                            if produto_existe(referencia):
+                                atualizar_produto(referencia)
+                            else:
+                                print("Referência do produto não encontrada.")
+                                opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
+                                if opcao == "2":
+                                    break
+                        elif opcao_produto == "2":
+                            clear_screen()
+                            referencia = input("Digite a referência da peça que deseja excluir: ")
+                            if produto_existe(referencia):
+                                excluir_produto(referencia)
+                            else:
+                                print("Referência do produto não encontrada.")
+                                opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
+                                if opcao == "2":
+                                    break
+                        elif opcao_produto == "3":
+                            clear_screen()
+                            referencia = input("Digite a referência da peça que deseja gerar o relatório: ")
+                            if produto_existe(referencia):
+                                for produto in produtos:
+                                    if produto["referencia"] == referencia:
+                                        gerar_relatorio([produto])
+                                        break
+                            else:
+                                print("Referência do produto não encontrada.")
+                                opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
+                                if opcao == "2":
+                                    break
+                        elif opcao_produto == "4":
+                            break
+                        
         elif opcao == "3":
             while True:
                 clear_screen()
@@ -118,7 +157,7 @@ def menu():
                 opcao_config = input("\nEscolha uma opção: ")
                 clear_screen()
                 if opcao_config == "1":
-                    # Aqui você pode adicionar o código para manipular os valores padrões
+                    alterar_configuracoes()
                     pass
                 elif opcao_config == "2":
                     show_info()
@@ -325,23 +364,15 @@ def precificar_produto():
             salvar_produto(produto)
             break
         
+import json
+
 def perguntas():
-    # Mapa de materiais e seus valores
-    materiais = {
-        "1": "PP",
-        "2": "ABS",
-        "3": "TPU",
-        "4": "PVC"
-    }
-
-    # Mapa de valores dos materiais
-    valores = {
-        "PP": 12.15,
-        "ABS": 13.03,
-        "TPU": 33.10,
-        "PVC": 15.47
-    }
-
+    # Carregue os materiais do arquivo config.json
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+    materiais = {str(i+1): material for i, material in enumerate(config['materiais'].keys())}
+    valores = config['materiais']
+ 
     # Perguntas que serão feitas para cada parte ou para o produto inteiro
     clear_screen()
     while True:
@@ -392,11 +423,11 @@ def perguntas():
     clear_screen()
     while True:
         clear_screen()
-        metalizado_ou_pintado = int(input("Metalizado?\n1. Sim\n2. Não\n\nResposta: "))
+        metalizado_ou_pintado = int(input("A peça é Metalizada ou Pintada?\n1. Metalizada\n2. Pintada\n\nEscolha uma opção: "))
         if metalizado_ou_pintado in [1, 2]:
             break
         else:
-            print("Por favor, insira 1 para Sim ou 2 para Não.")
+            print("Por favor, insira 1 para Metalizada ou 2 para Pintada.")
     clear_screen()
 
     # Retorne um dicionário com as respostas
@@ -410,11 +441,21 @@ def perguntas():
     }
         
 def acrescimos():
+    # Carregue as configurações de acréscimos do arquivo config.json
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+
+    # Use os valores carregados como padrões
+    imposto_padrao = config['config_acresimos']['imposto']
+    frete_padrao = config['config_acresimos']['frete']
+    comissao_padrao = config['config_acresimos']['comissao']
+    lucro_padrao = config['config_acresimos']['lucro']
+    
     # Perguntas sobre imposto, frete, comissão e lucro
     while True:
-        imposto = input("Imposto (padrão 12%): ")
+        imposto = input(f"Imposto (padrão {imposto_padrao}%): ")
         if not imposto:
-            imposto = 12.0
+            imposto = imposto_padrao
             break
         try:
             imposto = float(imposto)
@@ -425,9 +466,9 @@ def acrescimos():
         except ValueError:
             print("Por favor, insira um número válido.")
     while True:
-        frete = input("Frete (padrão 5%): ")
+        frete = input(f"Frete (padrão {frete_padrao}%): ")
         if not frete:
-            frete = 5.0
+            frete = frete_padrao
             break
         try:
             frete = float(frete)
@@ -438,9 +479,9 @@ def acrescimos():
         except ValueError:
             print("Por favor, insira um número válido.")
     while True:
-        comissao = input("Comissão (padrão 5%): ")
+        comissao = input(f"Comissão (padrão {comissao_padrao}%): ")
         if not comissao:
-            comissao = 5.0
+            comissao = comissao_padrao
             break
         try:
             comissao = float(comissao)
@@ -478,23 +519,27 @@ def acrescimos():
     return acrescimos
 
 def calcular(respostas):
+    # Carregue as configurações de cálculo do arquivo config.json
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+
     # Calcule quantas peças são feitas em uma hora
     pecas_por_hora = round((3600 / respostas["tempo_ciclo"]) * respostas["cavidades"], 4)
 
     # Calcule o custo por peça
-    custo_injecao = round(100.00 / pecas_por_hora, 4)
+    custo_injecao = round(config['config_calcular']['custo_injecao'] / pecas_por_hora, 4)
 
     # Calcule o custo do material por hora
     custo_material = round(respostas["peso"] * respostas["valor_material"], 4)
 
     # Calcule o custo da pintura por peça
     if respostas["metalizado_ou_pintado"] == 1:
-        custo_pintura = round(50 / respostas["pecas_por_satelite"], 4)
+        custo_pintura = round(config['config_calcular']['custo_pintura_metalizada'] / respostas["pecas_por_satelite"], 4)
     else:
-        custo_pintura = round(40 / respostas["pecas_por_satelite"], 4)
+        custo_pintura = round(config['config_calcular']['custo_pintura_normal'] / respostas["pecas_por_satelite"], 4)
 
-    # Defina a mão de obra como 0,04
-    mao_de_obra = 0.04
+    # Use a mão de obra do arquivo de configuração
+    mao_de_obra = config['config_calcular']['mao_de_obra']
 
     # Calcule o custo total e o valor total
     custo_total = round(custo_injecao + custo_material + custo_pintura + mao_de_obra, 4)
@@ -510,6 +555,60 @@ def calcular(respostas):
         "custo_total": custo_total,
         "valor_total": valor_total
     }
+
+def alterar_configuracoes():
+    # Carregue as configurações atuais do arquivo config.json
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+
+    while True:
+        print("Configurações\n")
+        print("1. Alterar configurações de acréscimos")
+        print("2. Alterar configurações de cálculo")
+        print("3. Alterar configurações de materiais")
+        print("4. Finalizar")
+        opcao = input("\nEscolha uma opção: ")
+
+        if opcao == "1":
+            # Exiba todas as configurações de acréscimos
+            for i, key in enumerate(config['config_acresimos'], start=1):
+                print(f"{i}. {key}: {config['config_acresimos'][key]}")
+            # Permita ao usuário escolher qual configuração alterar
+            opcao_acresimo = int(input("\nEscolha uma opção para alterar ou 0 para voltar: "))
+            if opcao_acresimo != 0:
+                key = list(config['config_acresimos'].keys())[opcao_acresimo - 1]
+                novo_valor = input(f"{key} atualmente é {config['config_acresimos'][key]}. Digite um novo valor: ")
+                config['config_acresimos'][key] = float(novo_valor)
+        elif opcao == "2":
+            # Exiba todas as configurações de cálculo
+            for i, key in enumerate(config['config_calcular'], start=1):
+                print(f"{i}. {key}: {config['config_calcular'][key]}")
+            # Permita ao usuário escolher qual configuração alterar
+            opcao_calculo = int(input("\nEscolha uma opção para alterar ou 0 para voltar: "))
+            if opcao_calculo != 0:
+                key = list(config['config_calcular'].keys())[opcao_calculo - 1]
+                novo_valor = input(f"{key} atualmente é {config['config_calcular'][key]}. Digite um novo valor: ")
+                config['config_calcular'][key] = float(novo_valor)
+        elif opcao == "3":
+            # Exiba todas as configurações de materiais
+            for i, key in enumerate(config['materiais'], start=1):
+                print(f"{i}. {key}: {config['materiais'][key]}")
+            # Permita ao usuário escolher qual configuração alterar
+            opcao_material = int(input("\nEscolha uma opção para alterar ou 0 para voltar: "))
+            if opcao_material != 0:
+                key = list(config['materiais'].keys())[opcao_material - 1]
+                novo_valor = input(f"{key} atualmente é {config['materiais'][key]}. Digite um novo valor: ")
+                config['materiais'][key] = float(novo_valor)
+        elif opcao == "4":
+            break
+        else:
+            print("Por favor, escolha uma opção válida.")
+
+    # Grave as novas configurações no arquivo config.json
+    with open('config.json', 'w') as f:
+        json.dump(config, f, indent=4)
+
+    print("Configurações atualizadas com sucesso.")
     
 def gerar_relatorio(produtos):
     while True:
