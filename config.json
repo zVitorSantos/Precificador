@@ -3,7 +3,7 @@
         "imposto": 12.0,
         "frete": 5.0,
         "comissao": 5.0,
-        "lucro": 10.0
+        "lucro": 30.0
     },
     "config_calcular": {
         "mao_de_obra": 0.04,

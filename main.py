@@ -3,8 +3,15 @@ import os
 import sys
 import requests
 import subprocess
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename, asksaveasfilename
+import shutil
+from datetime import datetime
+import pandas as pd
+import time
 
-# TODO: Buscar novas features após arrumar o funcionamento do autoupdate e preparar para salvar os produtos em um banco de dados
+# *TODO: Buscar novas features após arrumar o funcionamento do autoupdate e preparar para salvar os produtos em um banco de dados
+# *TODO: Formulário de importação/Exportação de produtos
 
 def set_console_size():
     os.system("mode con: cols=70 lines=23")
@@ -105,7 +112,9 @@ def menu():
                         break
                     else:
                         print("Por favor, escolha uma opção válida.")
+                        time.sleep(5)
             else:
+                voltar = False  
                 while True:
                     clear_screen()
                     for produto in produtos:
@@ -122,6 +131,7 @@ def menu():
                                 print("Referência do produto não encontrada.")
                                 opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
                                 if opcao == "2":
+                                    clear_screen()
                                     break
                         elif opcao_produto == "2":
                             clear_screen()
@@ -132,6 +142,7 @@ def menu():
                                 print("Referência do produto não encontrada.")
                                 opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
                                 if opcao == "2":
+                                    clear_screen()
                                     break
                         elif opcao_produto == "3":
                             clear_screen()
@@ -140,31 +151,39 @@ def menu():
                                 for produto in produtos:
                                     if produto["referencia"] == referencia:
                                         gerar_relatorio([produto])
+                                        clear_screen()
                                         break
                             else:
                                 print("Referência do produto não encontrada.")
                                 opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
                                 if opcao == "2":
+                                    clear_screen()
                                     break
                         elif opcao_produto == "4":
+                            clear_screen()
+                            voltar = True 
                             break
+                    if voltar:
+                        break
                         
         elif opcao == "3":
             while True:
                 clear_screen()
                 print("Configurações\n")
                 print("1. Valores Padrões")
-                print("2. Info")
-                print("3. Voltar")
+                print("2. Importar/Exportar(não finalizada)")
+                print("3. Info")
+                print("4. Voltar")
                 opcao_config = input("\nEscolha uma opção: ")
                 clear_screen()
                 if opcao_config == "1":
                     alterar_configuracoes()
-                    pass
                 elif opcao_config == "2":
+                    importar_exportar()
+                elif opcao_config == "3":
                     show_info()
                     input("\nPressione qualquer tecla para continuar...")
-                elif opcao_config == "3":
+                elif opcao_config == "4":
                     break
 
         elif opcao == "4":
@@ -226,7 +245,7 @@ def atualizar_produto(referencia):
                     print(f"8. Frete: {produto['acrescimos']['frete']}%")
                     print(f"9. Comissão: {produto['acrescimos']['comissao']}%")
                     print(f"10. Lucro: {produto['acrescimos']['lucro']}%")
-                    print(f"11. Finalizar")
+                    print(f"11. Voltar")
 
                 # Pedir ao usuário para escolher qual informação ele quer alterar
                 opcao = input("\nEscolha uma opção ou finalize: ")
@@ -273,10 +292,14 @@ def show_info():
     print(f"Versão atual do programa: {current_version}")
 
 def precificar_produto():
-    referencia = input("Digite a referência do produto: ")
+    referencia = int(input("Digite a referência do produto: "))
+    while referencia < 150:  
+        print("A referência deve ser igual ou maior que 150.")
+        referencia = int(input("Digite a referência do produto: "))
     produtos = carregar_produtos()
     for produto in produtos:
         if produto['referencia'] == referencia:
+            clear_screen()
             opcao = input("Essa referência já existe.\n\n1. Atualizar produto\n2. Excluir produto\n3. Voltar\n\nEscolha uma opção: ").upper()
             if opcao == "1":
                 atualizar_produto(referencia)
@@ -285,7 +308,8 @@ def precificar_produto():
                 excluir_produto(referencia)
                 return
             elif opcao == "3":
-                break
+                clear_screen()
+                return
     montado = None
     while montado is None:
         clear_screen()
@@ -294,6 +318,7 @@ def precificar_produto():
             montado = resposta == '1'
         else:
             print("Resposta inválida. Por favor, digite 1 para Sim ou 2 para Não.")
+            time.sleep(5)
 
     produtos = []
     respostas_result = [] 
@@ -307,6 +332,7 @@ def precificar_produto():
                 num_partes = resposta
             else:
                 print("Resposta inválida. Por favor, digite um número entre 2 e 10.")
+                time.sleep(5)
 
         clear_screen()
         custo_total_produto = 0
@@ -358,15 +384,12 @@ def precificar_produto():
 
     while True:
         clear_screen()
+        salvar_produto(produto)
         opcao = input("Cadastro concluído com Sucesso!\n\n1. Relatório da peça\n2. Voltar ao menu\n\nEscolha uma opção: ")
         if opcao == "1":
-            salvar_produto(produto)
             gerar_relatorio(produtos)
         elif opcao == "2":
-            salvar_produto(produto)
             break
-        
-import json
 
 def perguntas():
     # Carregue os materiais do arquivo config.json
@@ -384,6 +407,7 @@ def perguntas():
             break
         except ValueError:
             print("Por favor, insira um número válido.")
+            time.sleep(5)
     clear_screen()
     print("Material")
     for key, value in materiais.items():
@@ -394,6 +418,7 @@ def perguntas():
             break
         else:
             print("Por favor, escolha um material válido.")
+            time.sleep(5)
     material = materiais[material_escolhido]
     clear_screen()
     while True:
@@ -404,8 +429,10 @@ def perguntas():
                 break
             else:
                 print("Por favor, insira um número entre 0 e 1000.")
+                time.sleep(5)
         except ValueError:
             print("Por favor, insira um número válido.")
+            time.sleep(5)
     clear_screen()
     while True:
         clear_screen()
@@ -414,6 +441,7 @@ def perguntas():
             break
         except ValueError:
             print("Por favor, insira um número inteiro válido.")
+            time.sleep(5)
     clear_screen()
     while True:
         clear_screen()
@@ -422,6 +450,7 @@ def perguntas():
             break
         except ValueError:
             print("Por favor, insira um número inteiro válido.")
+            time.sleep(5)
     clear_screen()
     while True:
         clear_screen()
@@ -430,6 +459,7 @@ def perguntas():
             break
         else:
             print("Por favor, insira 1 para Metalizada ou 2 para Pintada.")
+            time.sleep(5)
     clear_screen()
 
     # Retorne um dicionário com as respostas
@@ -465,8 +495,10 @@ def acrescimos():
                 break
             else:
                 print("Por favor, insira um número entre 0 e 100.")
+                time.sleep(5)
         except ValueError:
             print("Por favor, insira um número válido.")
+            time.sleep(5)
     while True:
         frete = input(f"Frete (padrão {frete_padrao}%): ")
         if not frete:
@@ -478,8 +510,10 @@ def acrescimos():
                 break
             else:
                 print("Por favor, insira um número entre 0 e 100.")
+                time.sleep(5)
         except ValueError:
             print("Por favor, insira um número válido.")
+            time.sleep(5)
     while True:
         comissao = input(f"Comissão (padrão {comissao_padrao}%): ")
         if not comissao:
@@ -491,8 +525,10 @@ def acrescimos():
                 break
             else:
                 print("Por favor, insira um número entre 0 e 100.")
+                time.sleep(5)
         except ValueError:
             print("Por favor, insira um número válido.")
+            time.sleep(5)
 
     # Forçar a inserção de um lucro
     while True:
@@ -504,10 +540,13 @@ def acrescimos():
                     break
                 else:
                     print("Por favor, insira um número entre 0 e 100.")
+                    time.sleep(5)
             except ValueError:
                 print("Por favor, insira um número válido.")
+                time.sleep(5)
         else:
             print("É obrigatório definir uma margem de lucro.")
+            time.sleep(5)
 
     # Crie um dicionário com os acréscimos
     acrescimos = {
@@ -562,15 +601,14 @@ def alterar_configuracoes():
     # Carregue as configurações atuais do arquivo config.json
     with open('config.json', 'r') as f:
         config = json.load(f)
-        
-    clear_screen()
 
     while True:
+        clear_screen()
         print("Configurações\n")
         print("1. Alterar configurações de acréscimos")
         print("2. Alterar configurações de cálculo")
         print("3. Alterar configurações de materiais")
-        print("4. Finalizar")
+        print("4. Voltar")
         opcao = input("\nEscolha uma opção: ")
 
         if opcao == "1":
@@ -586,6 +624,7 @@ def alterar_configuracoes():
                     novo_valor = input(f"{key} atualmente é {config['config_acresimos'][key]}. Digite um novo valor: ")
                     config['config_acresimos'][key] = float(novo_valor)
                 else:
+                    clear_screen()
                     break
         elif opcao == "2":
             while True:
@@ -600,6 +639,7 @@ def alterar_configuracoes():
                     novo_valor = input(f"{key} atualmente é {config['config_calcular'][key]}. Digite um novo valor: ")
                     config['config_calcular'][key] = float(novo_valor)
                 else:
+                    clear_screen()
                     break
         elif opcao == "3":
             while True:
@@ -614,17 +654,171 @@ def alterar_configuracoes():
                     novo_valor = input(f"{key} atualmente é {config['materiais'][key]}. Digite um novo valor: ")
                     config['materiais'][key] = float(novo_valor)
                 else:
+                    clear_screen()
                     break
         elif opcao == "4":
             break
         else:
             print("Por favor, escolha uma opção válida.")
+            time.sleep(5)
 
     # Grava as novas configurações no arquivo config.json
     with open('config.json', 'w') as f:
         json.dump(config, f, indent=4)
 
     print("Configurações atualizadas com sucesso.")
+    time.sleep(5)
+    
+def adicionar_produto(produto):
+    # Verificar se a referência do produto já existe
+    produtos = carregar_produtos()
+    for p in produtos:
+        if 'Referencia' in p and 'Referencia' in produto and p['Referencia'] == produto['Referencia']:
+            print(f"Produto com referência {produto['Referencia']} já existe.")
+            return
+    # Calcular as informações que faltam
+    for resposta in produto['respostas']:
+        custos = calcular(resposta)
+        resposta.update(custos)
+    # Adicionar o produto
+    produtos.append(produto)
+    salvar_produto(produtos) 
+    print(f"Produto com referência {produto['Referencia']} adicionado com sucesso.")
+    time.sleep(5)
+
+def modelo_importacao():
+    # Definir as colunas do modelo
+    colunas = ['Referencia', 'Material', 'Peso', 'Cavidades', 'Tempo Ciclo', 'Peças por Satélite', 'Metalizado ou Pintado']
+    # Criar um DataFrame com dois exemplos de produtos
+    data = {
+        'Referencia': ['EX1', 'EX2', 'EX2'],
+        'Material': ['PP', 'PP', 'ABS'],
+        'Peso': [0.005, 0.005, 0.001],
+        'Cavidades': [24, 24, 50],
+        'Tempo Ciclo': [15, 15, 8],
+        'Peças por Satélite': [700, 700, 1289],
+        'Metalizado ou Pintado': ['Metalizado', 'Metalizado', 'Pintado']
+    }
+    df = pd.DataFrame(data, columns=colunas)
+    # Abrir uma janela de diálogo para escolher onde salvar o arquivo
+    root = Tk()
+    root.withdraw()
+    root.attributes('-topmost', True)
+    arquivo = asksaveasfilename(defaultextension=".xlsx", initialfile="modelo_importacao", filetypes=[("Excel files", "*.xlsx")])
+    if not arquivo:  # Se o usuário cancelar a janela de diálogo
+        return
+    # Salvar o DataFrame como um arquivo .xlsx
+    df.to_excel(arquivo, index=False)
+    clear_screen()
+    print("Modelo de importação criado com sucesso.")
+    root.destroy()
+
+def importar_exportar():
+    # Carregue as configurações atuais do arquivo config.json
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+        
+    opcao = input("1. Importar\n2. Exportar\n3. Voltar\n\nEscolha uma opção: ")
+    if opcao == "1":
+        clear_screen()
+        opcao_importacao = input("1. Baixar modelo de importação\n2. Importar arquivo\n\nEscolha uma opção: ")
+        if opcao_importacao == "1":
+            modelo_importacao()
+            input("\nPressione Enter para continuar...")
+        elif opcao_importacao == "2":
+            clear_screen()
+            root = Tk()
+            root.withdraw()
+            root.attributes('-topmost', True)
+            arquivo = askopenfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
+            if not arquivo:
+                return
+            
+            # Ler o arquivo Excel ou CSV
+            if arquivo.endswith('.csv'):
+                df = pd.read_csv(arquivo)
+            elif arquivo.endswith('.xlsx'):
+                df = pd.read_excel(arquivo)
+            else:
+                print("Formato de arquivo não suportado.")
+                input("\nPressione Enter para continuar...")
+                return
+            
+            # Use os valores carregados como padrões
+            imposto_padrao = config['config_acresimos']['imposto']
+            frete_padrao = config['config_acresimos']['frete']
+            comissao_padrao = config['config_acresimos']['comissao']
+            lucro_padrao = config['config_acresimos']['lucro']
+            
+            produtos = []
+            
+            # Iterar sobre os registros do DataFrame
+            for index, row in df.iterrows():
+                produto = {
+                    "referencia": row['Referencia'],
+                    "montado": False,
+                    "acrescimos": {
+                        "imposto": imposto_padrao,
+                        "frete": frete_padrao,
+                        "comissao": comissao_padrao,
+                        "lucro": lucro_padrao
+                    },
+                    "respostas": [
+                        {
+                            "peso": row['Peso'],
+                            "valor_material": config['materiais'][row['Material']],
+                            "cavidades": row['Cavidades'],
+                            "tempo_ciclo": row['Tempo Ciclo'],
+                            "pecas_por_satelite": row['Peças por Satélite'],
+                            "metalizado_ou_pintado": 1 if row['Metalizado ou Pintado'] == 'Metalizado' else 2
+                        }
+                    ],
+                    "custos": {
+                        "mao_de_obra": config['config_calcular']['mao_de_obra'],
+                        "custo_injecao": config['config_calcular']['custo_injecao'],
+                        "custo_pintura": config['config_calcular']['custo_pintura_metalizada'] if row['Metalizado ou Pintado'] == 'Metalizado' else config['config_calcular']['custo_pintura_normal'],
+                        "custo_material": row['Peso'] * config['materiais'][row['Material']]
+                    }
+                }
+                
+                produto['custo_total'] = sum(produto['custos'].values())
+                produto['valor_total'] = produto['custo_total'] * (1 + sum(produto['acrescimos'].values()) / 100)
+                
+                produtos.append(produto)
+            
+            # Adicionar os produtos processados ao sistema
+            for produto in produtos:
+                adicionar_produto(produto)
+            
+            root.destroy()
+        else:
+            clear_screen()
+            print("Opção inválida.")
+            input("\nPressione Enter para continuar...")
+    elif opcao == "2":
+        clear_screen()
+        # Obter a data e a hora atual e formatá-las como uma string
+        agora = datetime.now()
+        arquivo = "Export-" + agora.strftime("%Y%m%d_%H%M%S")
+        produtos = carregar_produtos()
+        df = pd.json_normalize(produtos, record_path='respostas', meta=['referencia', 'montado', 'acrescimos', 'custos', 'custo_total', 'valor_total'])
+        # Adicionar a extensão .csv ao nome do arquivo
+        arquivo_csv = arquivo + '.csv'
+        root = Tk()
+        root.withdraw()
+        root.attributes('-topmost', True) 
+        arquivo_csv = asksaveasfilename(defaultextension=".csv", initialfile=arquivo_csv, filetypes=[("CSV files", "*.csv")])  # Mostra uma janela de diálogo 'Salvar como'
+        if not arquivo_csv:
+            return
+        df.to_csv(arquivo_csv, index=False)
+        root.destroy() 
+    elif opcao == "3":
+        clear_screen()
+        return
+    else:
+        clear_screen()
+        print("Opção inválida.")
+        input("\nPressione Enter para continuar...")
     
 def gerar_relatorio(produtos):
     while True:
@@ -639,6 +833,7 @@ def gerar_relatorio(produtos):
             break
         else:
             print("Por favor, escolha uma opção válida.")
+            time.sleep(5)
 
 def exibir_relatorio(produtos):
     clear_screen()

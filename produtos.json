@@ -29,5 +29,209 @@
         },
         "custo_total": 0.1611,
         "valor_total": 0.1611
-    }
+    },
+    [
+        {
+            "referencia": "3839",
+            "montado": false,
+            "acrescimos": {
+                "imposto": 12.0,
+                "frete": 5.0,
+                "comissao": 5.0,
+                "lucro": 20.0
+            },
+            "respostas": [
+                {
+                    "peso": 0.005,
+                    "valor_material": 13.03,
+                    "cavidades": 48,
+                    "tempo_ciclo": 30.0,
+                    "pecas_por_satelite": 1296,
+                    "metalizado_ou_pintado": 1
+                }
+            ],
+            "custos": {
+                "pecas_por_hora": 5760.0,
+                "custo_injecao": 0.0174,
+                "custo_material": 0.0651,
+                "custo_pintura": 0.0386,
+                "mao_de_obra": 0.04,
+                "custo_total": 0.1611,
+                "valor_total": 0.1611
+            },
+            "custo_total": 0.1611,
+            "valor_total": 0.1611
+        },
+        {
+            "referencia": "EX1",
+            "montado": false,
+            "acrescimos": {
+                "imposto": 12.0,
+                "frete": 5.0,
+                "comissao": 5.0,
+                "lucro": 30.0
+            },
+            "respostas": [
+                {
+                    "peso": 0.005,
+                    "valor_material": 12.15,
+                    "cavidades": 24,
+                    "tempo_ciclo": 15,
+                    "pecas_por_satelite": 700,
+                    "metalizado_ou_pintado": 1,
+                    "pecas_por_hora": 5760.0,
+                    "custo_injecao": 0.0174,
+                    "custo_material": 0.0608,
+                    "custo_pintura": 0.0714,
+                    "mao_de_obra": 0.04,
+                    "custo_total": 0.1896,
+                    "valor_total": 0.1896
+                }
+            ],
+            "custos": {
+                "mao_de_obra": 0.04,
+                "custo_injecao": 100.0,
+                "custo_pintura": 50,
+                "custo_material": 0.060750000000000005
+            },
+            "custo_total": 150.10075,
+            "valor_total": 228.15314
+        }
+    ],
+    [
+        {
+            "referencia": "3839",
+            "montado": false,
+            "acrescimos": {
+                "imposto": 12.0,
+                "frete": 5.0,
+                "comissao": 5.0,
+                "lucro": 20.0
+            },
+            "respostas": [
+                {
+                    "peso": 0.005,
+                    "valor_material": 13.03,
+                    "cavidades": 48,
+                    "tempo_ciclo": 30.0,
+                    "pecas_por_satelite": 1296,
+                    "metalizado_ou_pintado": 1
+                }
+            ],
+            "custos": {
+                "pecas_por_hora": 5760.0,
+                "custo_injecao": 0.0174,
+                "custo_material": 0.0651,
+                "custo_pintura": 0.0386,
+                "mao_de_obra": 0.04,
+                "custo_total": 0.1611,
+                "valor_total": 0.1611
+            },
+            "custo_total": 0.1611,
+            "valor_total": 0.1611
+        },
+        [
+            {
+                "referencia": "3839",
+                "montado": false,
+                "acrescimos": {
+                    "imposto": 12.0,
+                    "frete": 5.0,
+                    "comissao": 5.0,
+                    "lucro": 20.0
+                },
+                "respostas": [
+                    {
+                        "peso": 0.005,
+                        "valor_material": 13.03,
+                        "cavidades": 48,
+                        "tempo_ciclo": 30.0,
+                        "pecas_por_satelite": 1296,
+                        "metalizado_ou_pintado": 1
+                    }
+                ],
+                "custos": {
+                    "pecas_por_hora": 5760.0,
+                    "custo_injecao": 0.0174,
+                    "custo_material": 0.0651,
+                    "custo_pintura": 0.0386,
+                    "mao_de_obra": 0.04,
+                    "custo_total": 0.1611,
+                    "valor_total": 0.1611
+                },
+                "custo_total": 0.1611,
+                "valor_total": 0.1611
+            },
+            {
+                "referencia": "EX1",
+                "montado": false,
+                "acrescimos": {
+                    "imposto": 12.0,
+                    "frete": 5.0,
+                    "comissao": 5.0,
+                    "lucro": 30.0
+                },
+                "respostas": [
+                    {
+                        "peso": 0.005,
+                        "valor_material": 12.15,
+                        "cavidades": 24,
+                        "tempo_ciclo": 15,
+                        "pecas_por_satelite": 700,
+                        "metalizado_ou_pintado": 1,
+                        "pecas_por_hora": 5760.0,
+                        "custo_injecao": 0.0174,
+                        "custo_material": 0.0608,
+                        "custo_pintura": 0.0714,
+                        "mao_de_obra": 0.04,
+                        "custo_total": 0.1896,
+                        "valor_total": 0.1896
+                    }
+                ],
+                "custos": {
+                    "mao_de_obra": 0.04,
+                    "custo_injecao": 100.0,
+                    "custo_pintura": 50,
+                    "custo_material": 0.060750000000000005
+                },
+                "custo_total": 150.10075,
+                "valor_total": 228.15314
+            }
+        ],
+        {
+            "referencia": "EX1",
+            "montado": false,
+            "acrescimos": {
+                "imposto": 12.0,
+                "frete": 5.0,
+                "comissao": 5.0,
+                "lucro": 30.0
+            },
+            "respostas": [
+                {
+                    "peso": 0.005,
+                    "valor_material": 12.15,
+                    "cavidades": 24,
+                    "tempo_ciclo": 15,
+                    "pecas_por_satelite": 700,
+                    "metalizado_ou_pintado": 1,
+                    "pecas_por_hora": 5760.0,
+                    "custo_injecao": 0.0174,
+                    "custo_material": 0.0608,
+                    "custo_pintura": 0.0714,
+                    "mao_de_obra": 0.04,
+                    "custo_total": 0.1896,
+                    "valor_total": 0.1896
+                }
+            ],
+            "custos": {
+                "mao_de_obra": 0.04,
+                "custo_injecao": 100.0,
+                "custo_pintura": 50,
+                "custo_material": 0.060750000000000005
+            },
+            "custo_total": 150.10075,
+            "valor_total": 228.15314
+        }
+    ]
 ]
