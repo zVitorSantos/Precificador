@@ -4,7 +4,7 @@ import requests
 import zipfile
 import sys
 import shutil
-from tqdm import tqdm
+import progressbar
 
 def update():
     try:
@@ -32,25 +32,34 @@ def update():
 
         # Faz uma solicitação GET para baixar o novo arquivo .zip
         response = requests.get(file_url, stream=True)
-
-        # Obtém o tamanho total do arquivo
         total_size = int(response.headers.get('content-length', 0))
 
-        # Cria a barra de progresso
-        progress_bar = tqdm(total=total_size, unit='iB', unit_scale=True)
+        # Nome do arquivo de saída
+        output_file = f"Precificador-v{latest_version}.zip"
 
-        # Salva o novo arquivo .zip
-        with open(f"Precificador-v{latest_version}.zip", "wb") as file:
-            for data in response.iter_content(chunk_size=1024):
-                progress_bar.update(len(data))
-                file.write(data)
+        # Configuração da barra de progresso
+        widgets = [
+            'Download: ', progressbar.Percentage(),
+            ' ', progressbar.Bar(marker='=', left='[', right=']'),
+            ' ', progressbar.FileTransferSpeed(),
+            ' ', progressbar.ETA()
+        ]
 
-        progress_bar.close()
+        # Inicializa a barra de progresso
+        with progressbar.ProgressBar(max_value=total_size, widgets=widgets) as pbar:
+            downloaded = 0
+            chunk_size = 1024  # Tamanho do bloco de download
+
+            with open(output_file, "wb") as file:
+                for data in response.iter_content(chunk_size=chunk_size):
+                    file.write(data)
+                    downloaded += len(data)
+                    pbar.update(downloaded)
 
         # Descompacta o arquivo .zip
-        with zipfile.ZipFile(f"Precificador-v{latest_version}.zip", 'r') as zip_ref:
+        with zipfile.ZipFile(output_file, 'r') as zip_ref:
             zip_ref.extractall(".")
-        
+
         # Substitui o antigo arquivo .exe pelo novo
         os.remove("main.exe")
         os.rename(f"./Precificador-v{latest_version}/main.exe", "main.exe")
