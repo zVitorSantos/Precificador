@@ -40,16 +40,19 @@ def update():
 
         # Inicializa a barra de progresso
         downloaded = 0
-        chunk_size = 1024  # Tamanho do bloco de download
+        chunk_size = 1024 
 
         widgets = [
             progressbar.Percentage(),
             ' ',        
             progressbar.Bar(marker='=', left='[', right=']'), 
             ' ',
-            progressbar.SimpleProgress(),
+            progressbar.FileTransferSpeed(unit='B'), 
+            ' | ',
+            progressbar.SimpleProgress(format='%(value).2f'),
+            ' MB ', 
             ' ',
-            progressbar.FormatLabel('| %(elapsed)s'),
+            progressbar.FormatLabel('| %(elapsed)s'), 
         ]
 
         # Abre o arquivo de saída para escrita em modo binário
@@ -74,8 +77,6 @@ def update():
             input("\nPressione qualquer tecla para continuar...")
             sys.exit()
         
-        input("\nPressione qualquer tecla para continuar...")
-        
         # Descompacta o arquivo .zip
         with zipfile.ZipFile(output_file, 'r') as zip_ref:
             zip_ref.extractall(".")
@@ -83,8 +84,6 @@ def update():
         # Substitui o antigo arquivo .exe pelo novo
         os.remove("main.exe")
         os.rename(f"./Precificador-v{latest_version}/main.exe", "main.exe")
-        
-        input("\nPressione qualquer tecla para continuar...")
 
         # Atualiza a current_version no arquivo version.txt
         with open("version.txt", "w") as file:
