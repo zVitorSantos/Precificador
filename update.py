@@ -4,6 +4,7 @@ import requests
 import zipfile
 import sys
 import shutil
+from datetime import timedelta
 import progressbar
 
 def update():
@@ -33,36 +34,57 @@ def update():
         # Faz uma solicitação GET para baixar o novo arquivo .zip
         response = requests.get(file_url, stream=True)
         total_size = int(response.headers.get('content-length', 0))
-
+        
         # Nome do arquivo de saída
         output_file = f"Precificador-v{latest_version}.zip"
 
-        # Configuração da barra de progresso
+        # Inicializa a barra de progresso
+        downloaded = 0
+        chunk_size = 1024  # Tamanho do bloco de download
+
         widgets = [
-            'Download: ', progressbar.Percentage(),
-            ' ', progressbar.Bar(marker='=', left='[', right=']'),
-            ' ', progressbar.FileTransferSpeed(),
-            ' ', progressbar.ETA()
+            progressbar.Percentage(),
+            ' ',        
+            progressbar.Bar(marker='=', left='[', right=']'), 
+            ' ',
+            progressbar.SimpleProgress(),
+            ' ',
+            progressbar.FormatLabel('| %(elapsed)s'),
         ]
 
-        # Inicializa a barra de progresso
-        with progressbar.ProgressBar(max_value=total_size, widgets=widgets) as pbar:
-            downloaded = 0
-            chunk_size = 1024  # Tamanho do bloco de download
-
-            with open(output_file, "wb") as file:
+        # Abre o arquivo de saída para escrita em modo binário
+        with open(output_file, "wb") as file:
+            # Inicializa a barra de progresso com o tamanho total esperado
+            with progressbar.ProgressBar(max_value=total_size, widgets=widgets) as pbar:
                 for data in response.iter_content(chunk_size=chunk_size):
                     file.write(data)
                     downloaded += len(data)
                     pbar.update(downloaded)
 
+        # Verifica se o arquivo foi baixado completamente
+        if downloaded != total_size:
+            print("\nErro: O download do arquivo não foi concluído com sucesso.")
+            input("\nPressione qualquer tecla para continuar...")
+            sys.exit()
+        
+        # Verifica o tamanho do arquivo baixado
+        downloaded_file_size = os.path.getsize(output_file)
+        if downloaded_file_size != total_size:
+            print("\nErro: O tamanho do arquivo baixado não corresponde ao tamanho esperado.")
+            input("\nPressione qualquer tecla para continuar...")
+            sys.exit()
+        
+        input("\nPressione qualquer tecla para continuar...")
+        
         # Descompacta o arquivo .zip
         with zipfile.ZipFile(output_file, 'r') as zip_ref:
             zip_ref.extractall(".")
-
+        
         # Substitui o antigo arquivo .exe pelo novo
         os.remove("main.exe")
         os.rename(f"./Precificador-v{latest_version}/main.exe", "main.exe")
+        
+        input("\nPressione qualquer tecla para continuar...")
 
         # Atualiza a current_version no arquivo version.txt
         with open("version.txt", "w") as file:
@@ -80,10 +102,10 @@ def update():
         subprocess.Popen(["main.exe"])
         
         sys.exit()
-            
+        
     except requests.exceptions.RequestException as e:
         print(f"Erro ao baixar a nova versão: {e}")
         
-    input("\nPressione qualquer tecla para continuar...")
+        input("\nPressione qualquer tecla para continuar...")
 
 update()
