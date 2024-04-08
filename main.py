@@ -4,6 +4,8 @@ import sys
 import requests
 import subprocess
 
+# TODO: Buscar novas features após arrumar o funcionamento do autoupdate e preparar para salvar os produtos em um banco de dados
+
 def set_console_size():
     os.system("mode con: cols=70 lines=23")
 set_console_size()
@@ -560,6 +562,8 @@ def alterar_configuracoes():
     # Carregue as configurações atuais do arquivo config.json
     with open('config.json', 'r') as f:
         config = json.load(f)
+        
+    clear_screen()
 
     while True:
         print("Configurações\n")
@@ -570,41 +574,53 @@ def alterar_configuracoes():
         opcao = input("\nEscolha uma opção: ")
 
         if opcao == "1":
-            # Exiba todas as configurações de acréscimos
-            for i, key in enumerate(config['config_acresimos'], start=1):
-                print(f"{i}. {key}: {config['config_acresimos'][key]}")
-            # Permita ao usuário escolher qual configuração alterar
-            opcao_acresimo = int(input("\nEscolha uma opção para alterar ou 0 para voltar: "))
-            if opcao_acresimo != 0:
-                key = list(config['config_acresimos'].keys())[opcao_acresimo - 1]
-                novo_valor = input(f"{key} atualmente é {config['config_acresimos'][key]}. Digite um novo valor: ")
-                config['config_acresimos'][key] = float(novo_valor)
+            while True:
+                clear_screen()
+                # Exibe todas as configurações de acréscimos
+                for i, key in enumerate(config['config_acresimos'], start=1):
+                    print(f"{i}. {key}: {config['config_acresimos'][key]}")
+                # Permite ao usuário escolher qual configuração alterar
+                opcao_acresimo = int(input("\nEscolha uma opção para alterar ou 0 para voltar: "))
+                if opcao_acresimo != 0:
+                    key = list(config['config_acresimos'].keys())[opcao_acresimo - 1]
+                    novo_valor = input(f"{key} atualmente é {config['config_acresimos'][key]}. Digite um novo valor: ")
+                    config['config_acresimos'][key] = float(novo_valor)
+                else:
+                    break
         elif opcao == "2":
-            # Exiba todas as configurações de cálculo
-            for i, key in enumerate(config['config_calcular'], start=1):
-                print(f"{i}. {key}: {config['config_calcular'][key]}")
-            # Permita ao usuário escolher qual configuração alterar
-            opcao_calculo = int(input("\nEscolha uma opção para alterar ou 0 para voltar: "))
-            if opcao_calculo != 0:
-                key = list(config['config_calcular'].keys())[opcao_calculo - 1]
-                novo_valor = input(f"{key} atualmente é {config['config_calcular'][key]}. Digite um novo valor: ")
-                config['config_calcular'][key] = float(novo_valor)
+            while True:
+                clear_screen()
+                # Exiba todas as configurações de cálculo
+                for i, key in enumerate(config['config_calcular'], start=1):
+                    print(f"{i}. {key}: {config['config_calcular'][key]}")
+                # Permite ao usuário escolher qual configuração alterar
+                opcao_calculo = int(input("\nEscolha uma opção para alterar ou 0 para voltar: "))
+                if opcao_calculo != 0:
+                    key = list(config['config_calcular'].keys())[opcao_calculo - 1]
+                    novo_valor = input(f"{key} atualmente é {config['config_calcular'][key]}. Digite um novo valor: ")
+                    config['config_calcular'][key] = float(novo_valor)
+                else:
+                    break
         elif opcao == "3":
-            # Exiba todas as configurações de materiais
-            for i, key in enumerate(config['materiais'], start=1):
-                print(f"{i}. {key}: {config['materiais'][key]}")
-            # Permita ao usuário escolher qual configuração alterar
-            opcao_material = int(input("\nEscolha uma opção para alterar ou 0 para voltar: "))
-            if opcao_material != 0:
-                key = list(config['materiais'].keys())[opcao_material - 1]
-                novo_valor = input(f"{key} atualmente é {config['materiais'][key]}. Digite um novo valor: ")
-                config['materiais'][key] = float(novo_valor)
+            while True:
+                clear_screen()
+                # Exibe todas as configurações de materiais
+                for i, key in enumerate(config['materiais'], start=1):
+                    print(f"{i}. {key}: {config['materiais'][key]}")
+                # Permite ao usuário escolher qual configuração alterar
+                opcao_material = int(input("\nEscolha uma opção para alterar ou 0 para voltar: "))
+                if opcao_material != 0:
+                    key = list(config['materiais'].keys())[opcao_material - 1]
+                    novo_valor = input(f"{key} atualmente é {config['materiais'][key]}. Digite um novo valor: ")
+                    config['materiais'][key] = float(novo_valor)
+                else:
+                    break
         elif opcao == "4":
             break
         else:
             print("Por favor, escolha uma opção válida.")
 
-    # Grave as novas configurações no arquivo config.json
+    # Grava as novas configurações no arquivo config.json
     with open('config.json', 'w') as f:
         json.dump(config, f, indent=4)
 
