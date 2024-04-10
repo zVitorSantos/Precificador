@@ -3,13 +3,13 @@ import os
 import sys
 import requests
 import subprocess
-import pandas as pd
 import time
 
 # imports to import/export functions
 # from tkinter import Tk
 # from tkinter.filedialog import askopenfilename, asksaveasfilename
 # from datetime import datetime
+# import pandas as pd
 
 # *TODO: Preparar para salvar os produtos em um banco de dados
 # *TODO: Finalizar formulário de importação/exportação de produtos
