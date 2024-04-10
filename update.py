@@ -49,20 +49,17 @@ def update():
             ' ',
             progressbar.FileTransferSpeed(unit='B'), 
             ' | ',
-            progressbar.SimpleProgress(format='%(value).2f'),
-            ' MB ', 
-            ' ',
-            progressbar.FormatLabel('| %(elapsed)s'), 
+            progressbar.FormatLabel('%(value).2f/%(max_value).2f MB'),
         ]
-
+        
         # Abre o arquivo de saída para escrita em modo binário
         with open(output_file, "wb") as file:
-            # Inicializa a barra de progresso com o tamanho total esperado
-            with progressbar.ProgressBar(max_value=total_size, widgets=widgets) as pbar:
+            # Inicializa a barra de progresso com o tamanho total esperado em MB
+            with progressbar.ProgressBar(max_value=total_size / (1024 * 1024), widgets=widgets) as pbar:
                 for data in response.iter_content(chunk_size=chunk_size):
                     file.write(data)
                     downloaded += len(data)
-                    pbar.update(downloaded)
+                    pbar.update(downloaded / (1024 * 1024))
 
         # Verifica se o arquivo foi baixado completamente
         if downloaded != total_size:

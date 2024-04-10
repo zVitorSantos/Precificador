@@ -5,16 +5,15 @@ import requests
 import subprocess
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-import shutil
 from datetime import datetime
 import pandas as pd
 import time
 
-# *TODO: Buscar novas features após arrumar o funcionamento do autoupdate e preparar para salvar os produtos em um banco de dados
-# *TODO: Formulário de importação/Exportação de produtos
+# *TODO: Preparar para salvar os produtos em um banco de dados
+# *TODO: Finalizar formulário de importação/exportação de produtos
 
 def set_console_size():
-    os.system("mode con: cols=70 lines=23")
+    os.system("mode con: cols=75")
 set_console_size()
     
 def check_for_updates():
@@ -54,8 +53,48 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def menu():
-    produtos = carregar_produtos()
-    
+    verificar_config()
+      
+    while True:
+        clear_screen()
+        print("Programa de Precificação de Produtos\n")
+        print("1. Cadastrar Produto")
+        print("2. Produtos Cadastrados")
+        print("3. Configurações")
+        print("4. Sair")
+        opcao = input("\nEscolha uma opção: ")
+        clear_screen()
+        if opcao == "1":
+            precificar_produto()
+        elif opcao == "2":
+            exibir_cadastrados()
+        elif opcao == "3":
+            while True:
+                clear_screen()
+                print("Configurações\n")
+                print("1. Valores Padrões")
+                print("2. Importar/Exportar(não finalizada)")
+                print("3. Info")
+                print("4. Voltar")
+                opcao_config = input("\nEscolha uma opção: ")
+                clear_screen()
+                if opcao_config == "1":
+                    alterar_configuracoes()
+                elif opcao_config == "2":
+                    importar_exportar()
+                elif opcao_config == "3":
+                    show_info()
+                elif opcao_config == "4":
+                    break
+                else:
+                    print("Opção inválida. Por favor, escolha uma opção válida.")
+                    time.sleep(2)
+
+        elif opcao == "4":
+            clear_screen()
+            break
+        
+def verificar_config():
     # Verifique se o arquivo config.json existe
     if not os.path.exists('config.json'):
         # Se não existir, crie o arquivo com valores padrão
@@ -81,114 +120,6 @@ def menu():
         }
         with open('config.json', 'w') as f:
             json.dump(config, f, indent=4)
-    
-    def produto_existe(referencia):
-                    for produto in produtos:
-                        if produto["referencia"] == referencia:
-                            return True
-                    return False
-                
-    while True:
-        clear_screen()
-        print("Programa de Precificação de Produtos\n")
-        print("1. Cadastrar Produto")
-        print("2. Produtos Cadastrados")
-        print("3. Configurações")
-        print("4. Sair")
-        opcao = input("\nEscolha uma opção: ")
-        clear_screen()
-        if opcao == "1":
-            precificar_produto()
-        elif opcao == "2":
-            if not produtos:
-                print("Nenhum produto cadastrado.")
-                while True:
-                    opcao_produto = input("\n1. Cadastrar Produto.\n2. Voltar\n\nEscolha: ").upper()
-                    if opcao_produto == "1":
-                        clear_screen()
-                        precificar_produto()
-                        break
-                    elif opcao_produto == "2":
-                        break
-                    else:
-                        print("Por favor, escolha uma opção válida.")
-                        time.sleep(5)
-            else:
-                voltar = False  
-                while True:
-                    clear_screen()
-                    for produto in produtos:
-                        clear_screen()
-                        print("Ref:", produto["referencia"])
-                    opcao_produto = input("\n1. Atualizar Produto.\n2. Excluir Produto\n3. Gerar Relatório\n4. Voltar\n\nEscolha: ").upper()
-                    while True:
-                        if opcao_produto == "1":
-                            clear_screen()
-                            referencia = input("Digite a referência da peça que deseja atualizar: ")
-                            if produto_existe(referencia):
-                                atualizar_produto(referencia)
-                            else:
-                                print("Referência do produto não encontrada.")
-                                opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
-                                if opcao == "2":
-                                    clear_screen()
-                                    break
-                        elif opcao_produto == "2":
-                            clear_screen()
-                            referencia = input("Digite a referência da peça que deseja excluir: ")
-                            if produto_existe(referencia):
-                                excluir_produto(referencia)
-                            else:
-                                print("Referência do produto não encontrada.")
-                                opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
-                                if opcao == "2":
-                                    clear_screen()
-                                    break
-                        elif opcao_produto == "3":
-                            clear_screen()
-                            referencia = input("Digite a referência da peça que deseja gerar o relatório: ")
-                            if produto_existe(referencia):
-                                for produto in produtos:
-                                    if produto["referencia"] == referencia:
-                                        gerar_relatorio([produto])
-                                        clear_screen()
-                                        break
-                            else:
-                                print("Referência do produto não encontrada.")
-                                opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
-                                if opcao == "2":
-                                    clear_screen()
-                                    break
-                        elif opcao_produto == "4":
-                            clear_screen()
-                            voltar = True 
-                            break
-                    if voltar:
-                        break
-                        
-        elif opcao == "3":
-            while True:
-                clear_screen()
-                print("Configurações\n")
-                print("1. Valores Padrões")
-                print("2. Importar/Exportar(não finalizada)")
-                print("3. Info")
-                print("4. Voltar")
-                opcao_config = input("\nEscolha uma opção: ")
-                clear_screen()
-                if opcao_config == "1":
-                    alterar_configuracoes()
-                elif opcao_config == "2":
-                    importar_exportar()
-                elif opcao_config == "3":
-                    show_info()
-                    input("\nPressione qualquer tecla para continuar...")
-                elif opcao_config == "4":
-                    break
-
-        elif opcao == "4":
-            clear_screen()
-            break
         
 def salvar_produto(produto):
     try:
@@ -196,51 +127,65 @@ def salvar_produto(produto):
             produtos = json.load(f)
     except FileNotFoundError:
         produtos = []
+    except json.JSONDecodeError:
+        print("Erro ao decodificar o JSON.")
+        return
+    except Exception as e:
+        print(f"Erro desconhecido: {e}")
+        return
+
     produtos.append(produto)
-    with open('produtos.json', 'w') as f:
-        json.dump(produtos, f, indent=4)
+
+    try:
+        with open('produtos.json', 'w') as f:
+            json.dump(produtos, f, indent=4)
+    except Exception as e:
+        print(f"Erro ao escrever no arquivo: {e}")
         
 def excluir_produto(referencia):
     clear_screen()
-    produtos = carregar_produtos()
+    try:
+        produtos = carregar_produtos()
+    except Exception as e:
+        print(f"Erro ao carregar produtos: {e}")
+        return
     produto = next((produto for produto in produtos if produto['referencia'] == referencia), None)
     if produto is None:
         print("Produto não encontrado.")
         return
-    confirmacao = input(f"Tem certeza de que deseja excluir o produto {produto['nome']}? (s/n): ")
+    confirmacao = input(f"Tem certeza de que deseja excluir o produto {produto['referencia']}? (s/n): ")
     if confirmacao.lower() != 's':
         print("Exclusão cancelada.")
         return
     produtos = [produto for produto in produtos if produto['referencia'] != referencia]
-    with open('produtos.json', 'w') as f:
-        json.dump(produtos, f, indent=4)
+    try:
+        with open('produtos.json', 'w') as f:
+            json.dump(produtos, f, indent=4)
+    except Exception as e:
+        print(f"Erro ao salvar produtos: {e}")
+        return
     print(f"Produto {produto['nome']} excluído com sucesso.")
 
-def carregar_produtos():
+def atualizar_produto(referencia):
     try:
         with open('produtos.json', 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return []
+            produtos = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("Erro ao carregar produtos.")
+        return
 
-def atualizar_produto(referencia):
-    # Carregar os produtos do arquivo JSON
-    with open('produtos.json', 'r') as f:
-        produtos = json.load(f)
-
-    # Encontrar o produto que corresponde à referência fornecida
     for produto in produtos:
         if produto['referencia'] == referencia:
             while True:
                 for i, resposta in enumerate(produto['respostas'], start=1):
                     clear_screen()
                     print(f"\nInformações da resposta {i}:\n")
-                    print(f"1. Peso: {resposta['peso']} kg")
+                    print(f"1. Peso: {resposta['peso']} g")
                     print(f"2. Valor do material: R${resposta['valor_material']:.2f}")
                     print(f"3. Cavidades: {resposta['cavidades']}")
                     print(f"4. Tempo de ciclo: {resposta['tempo_ciclo']} segundos")
                     print(f"5. Peças por satélite: {resposta['pecas_por_satelite']}")
-                    print(f"6. Metalizada ou Pintada: {'Pintada' if resposta['metalizado_ou_pintado'] == 1 else 'Metalizada'}")
+                    print(f"6. Metalizada ou Pintada: {'Pintada' if resposta['metalizado_ou_pintado'] == 2 else 'Metalizada'}")
                     print(f"7. Imposto: {produto['acrescimos']['imposto']}%")
                     print(f"8. Frete: {produto['acrescimos']['frete']}%")
                     print(f"9. Comissão: {produto['acrescimos']['comissao']}%")
@@ -250,28 +195,75 @@ def atualizar_produto(referencia):
                 # Pedir ao usuário para escolher qual informação ele quer alterar
                 opcao = input("\nEscolha uma opção ou finalize: ")
 
-                if opcao == "1":
-                    resposta['peso'] = float(input("Novo peso: "))
-                elif opcao == "2":
-                    resposta['valor_material'] = float(input("Novo valor do material: R$"))
-                elif opcao == "3":
-                    resposta['cavidades'] = int(input("Novas cavidades: "))
-                elif opcao == "4":
-                    resposta['tempo_ciclo'] = float(input("Novo tempo de ciclo: "))
-                elif opcao == "5":
-                    resposta['pecas_por_satelite'] = int(input("Novas peças por satélite: "))
-                elif opcao == "6":
-                    resposta['metalizado_ou_pintado'] = int(input("Metalizada ou Pintada (1 para Pintada, 0 para Metalizada): "))
-                elif opcao == "7":
-                    produto['acrescimos']['imposto'] = float(input("Novo imposto: "))
-                elif opcao == "8":
-                    produto['acrescimos']['frete'] = float(input("Novo frete: "))
-                elif opcao == "9":
-                    produto['acrescimos']['comissao'] = float(input("Nova comissão: "))
-                elif opcao == "10":
-                    produto['acrescimos']['lucro'] = float(input("Novo lucro: "))
-                elif opcao == "11":
-                    break
+                try:
+                    if opcao == "1":
+                        while True:
+                            peso = float(input("Novo peso: "))
+                            if 1 <= peso <= 1000:
+                                resposta['peso'] = peso
+                                break
+                            else:
+                                print("O peso deve estar entre 1 e 1000.")
+                                time.sleep(3)
+                    elif opcao == "2":
+                        while True:
+                            valor_material = float(input("Novo valor do material: R$"))
+                            if 1 <= valor_material <= 10000:
+                                resposta['valor_material'] = valor_material
+                                break
+                            else:
+                                print("O valor do material deve estar entre 1 e 10000.")
+                                time.sleep(3)
+                    elif opcao == "3":
+                        while True:
+                            cavidades = int(input("Novas cavidades: "))
+                            if 1 <= cavidades <= 10000:
+                                resposta['cavidades'] = cavidades
+                                break
+                            else:
+                                print("As cavidades devem estar entre 1 e 10000.")
+                                time.sleep(3)
+                    elif opcao == "4":
+                        while True:
+                            tempo_ciclo = float(input("Novo tempo de ciclo: "))
+                            if 1 <= tempo_ciclo <= 100000:
+                                resposta['tempo_ciclo'] = tempo_ciclo
+                                break
+                            else:
+                                print("O tempo de ciclo deve estar entre 1 e 100000.")
+                                time.sleep(3)
+                    elif opcao == "5":
+                        while True:
+                            pecas_por_satelite = int(input("Novas peças por satélite: "))
+                            if 1 <= pecas_por_satelite <= 10000:
+                                resposta['pecas_por_satelite'] = pecas_por_satelite
+                                break
+                            else:
+                                print("As peças por satélite devem estar entre 1 e 10000.")
+                                time.sleep(3)
+                    elif opcao == "6":
+                        while True:
+                            metalizado_ou_pintado = int(input("1. Metalizada\n2. Pintada\n\nEscolha uma opção:"))
+                            if metalizado_ou_pintado in [1, 2]:
+                                resposta['metalizado_ou_pintado'] = metalizado_ou_pintado
+                                break
+                            else:
+                                print("Por favor, escolha 1 para Metalizada ou 2 para Pintada.")
+                                time.sleep(3)
+                    elif opcao in ["7", "8", "9", "10"]:
+                        while True:
+                            acrescimo = float(input("Novo " + ("imposto" if opcao == "7" else "frete" if opcao == "8" else "comissão" if opcao == "9" else "lucro") + ": "))
+                            if 0 <= acrescimo <= 100:
+                                produto['acrescimos'][("imposto" if opcao == "7" else "frete" if opcao == "8" else "comissao" if opcao == "9" else "lucro")] = acrescimo
+                                break
+                            else:
+                                print("O valor deve estar entre 0 e 100.")
+                                time.sleep(3)
+                    elif opcao == "11":
+                        break
+                except ValueError:
+                    print("Entrada inválida. Por favor, tente novamente.")
+                    continue
 
             # Atualizar as informações do produto
             for resposta in produto['respostas']:
@@ -282,34 +274,147 @@ def atualizar_produto(referencia):
 
             break
 
-    # Salvar os produtos atualizados no arquivo JSON
-    with open('produtos.json', 'w') as f:
-        json.dump(produtos, f, indent=4)
+    try:
+        with open('produtos.json', 'w') as f:
+            json.dump(produtos, f, indent=4)
+    except Exception as e:
+        print(f"Erro ao salvar produtos: {e}")
         
+def carregar_produtos():
+    try:
+        with open('produtos.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+    except json.JSONDecodeError:
+        print("Erro ao decodificar o JSON.")
+        return []
+    
+def exibir_cadastrados():
+    voltar = False  
+    while True:
+        produtos = carregar_produtos()
+        def produto_existe(referencia):
+            for produto in produtos:
+                if produto["referencia"] == int(referencia):
+                    return True
+            return False
+
+        if not produtos:
+            print("Nenhum produto cadastrado.")
+            while True:
+                opcao_produto = input("\n1. Cadastrar Produto.\n2. Voltar\n\nEscolha uma opção: ").upper()
+                if opcao_produto == "1":
+                    clear_screen()
+                    precificar_produto()
+                    break
+                elif opcao_produto == "2":
+                    break
+                else:
+                    print("Por favor, escolha uma opção válida.")
+                    time.sleep(3)
+        else:
+            clear_screen()
+            for produto in produtos:
+                print("Ref:", produto["referencia"])
+            opcao_produto = input("\n1. Atualizar Produto\n2. Excluir Produto\n3. Gerar Relatório\n4. Voltar\n\nEscolha: ").upper()
+            while True:
+                if opcao_produto == "1":
+                    clear_screen()
+                    referencia = input("Digite a referência da peça que deseja atualizar: ")
+                    if produto_existe(referencia):
+                        atualizar_produto(referencia)
+                    else:
+                        print("Referência do produto não encontrada.")
+                        opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
+                        if opcao == "2":
+                            clear_screen()
+                            break
+                elif opcao_produto == "2":
+                    clear_screen()
+                    referencia = input("Digite a referência da peça que deseja excluir: ")
+                    if produto_existe(referencia):
+                        excluir_produto(referencia)
+                    else:
+                        print("Referência do produto não encontrada.")
+                        opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
+                        if opcao == "2":
+                            clear_screen()
+                            break
+                elif opcao_produto == "3":
+                    while True:
+                        clear_screen()
+                        referencia = input("Digite a referência para gerar o relatório,\nou digite (1) para voltar:\n\nReferência:")
+                        if referencia.lower() == '1':
+                            break
+                        clear_screen()
+                        if produto_existe(referencia):
+                            for produto in produtos:
+                                if produto["referencia"] == int(referencia):
+                                    gerar_relatorio([produto])
+                                    clear_screen()
+                                    break
+                        else:
+                            print("Referência do produto não encontrada.")
+                            opcao = input("Deseja inserir outra referência (1) ou voltar (2)? ")
+                            if opcao == "2":
+                                clear_screen()
+                                break
+                        
+                elif opcao_produto == "4":
+                    clear_screen()
+                    voltar = True 
+                    break
+                else:
+                    print("Opção inválida. Por favor, escolha uma opção válida.")
+                    time.sleep(3)
+                    break
+            if voltar:
+                break
+            
 def show_info():
     with open("version.txt", "r") as file:
         current_version = file.read().strip()
     print(f"Versão atual do programa: {current_version}")
+    input("\nPressione qualquer tecla para voltar...")
 
 def precificar_produto():
-    referencia = int(input("Digite a referência do produto: "))
-    while referencia < 150:  
-        print("A referência deve ser igual ou maior que 150.")
-        referencia = int(input("Digite a referência do produto: "))
-    produtos = carregar_produtos()
+    while True:
+        try:
+            entrada = input("Digite a referência do produto ou (1) para voltar: ")
+            if entrada.lower() == '1':
+                return
+            referencia = int(entrada)
+            if referencia < 150:
+                print("A referência deve ser igual ou maior que 150.")
+                continue
+            break
+        except ValueError:
+            print("Entrada inválida. Por favor, digite um número inteiro.")
+            time.sleep(3)
+            continue
+
+    try:
+        produtos = carregar_produtos()
+    except Exception as e:
+        print(f"Erro ao carregar produtos: {e}")
+        return
+
     for produto in produtos:
         if produto['referencia'] == referencia:
-            clear_screen()
-            opcao = input("Essa referência já existe.\n\n1. Atualizar produto\n2. Excluir produto\n3. Voltar\n\nEscolha uma opção: ").upper()
-            if opcao == "1":
-                atualizar_produto(referencia)
-                break
-            elif opcao == "2":
-                excluir_produto(referencia)
-                return
-            elif opcao == "3":
+            while True:
                 clear_screen()
-                return
+                opcao = input("Essa referência já existe.\n\n1. Atualizar produto\n2. Excluir produto\n3. Voltar\n\nEscolha uma opção: ").upper()
+                if opcao == "1":
+                    atualizar_produto(referencia)
+                    return
+                elif opcao == "2":
+                    if excluir_produto(referencia):
+                        return
+                elif opcao == "3":
+                    clear_screen()
+                    return
+
     montado = None
     while montado is None:
         clear_screen()
@@ -318,7 +423,7 @@ def precificar_produto():
             montado = resposta == '1'
         else:
             print("Resposta inválida. Por favor, digite 1 para Sim ou 2 para Não.")
-            time.sleep(5)
+            time.sleep(3)
 
     produtos = []
     respostas_result = [] 
@@ -327,16 +432,20 @@ def precificar_produto():
         num_partes = None
         while num_partes is None:
             clear_screen()
-            resposta = int(input("\nQuantas partes o produto possui? "))
-            if 2 <= resposta <= 10:
-                num_partes = resposta
-            else:
-                print("Resposta inválida. Por favor, digite um número entre 2 e 10.")
-                time.sleep(5)
-
+            try:
+                resposta = int(input("Quantas partes o produto possui? "))
+                if 2 <= resposta <= 10:
+                    num_partes = resposta
+                else:
+                    print("Resposta inválida. Por favor, digite um número entre 2 e 10.")
+                    time.sleep(3)
+            except ValueError:
+                print("Entrada inválida. Por favor, digite um número inteiro.")
+                time.sleep(3)
+                continue
+    
         clear_screen()
         custo_total_produto = 0
-        valor_total_produto = 0
         for i in range(num_partes):
             print(f"\nPerguntas para a parte {i+1}")
             respostas = perguntas()
@@ -344,13 +453,14 @@ def precificar_produto():
             custos = calcular(respostas)  
             custos_result.append(custos) 
             custo_total_produto += custos['custo_total']
-            valor_total_produto += custos['valor_total']
-            acrescimos_result = acrescimos()
-            custo_total_produto = custo_total_produto * (1 + acrescimos_result["imposto"]/100)
-            custo_total_produto = custo_total_produto * (1 + acrescimos_result["frete"]/100)
-            custo_total_produto = custo_total_produto * (1 + acrescimos_result["comissao"]/100)
-            valor_total_produto = custo_total_produto * (1 + acrescimos_result["lucro"]/100)
-            produto = {
+    
+        acrescimos_result = acrescimos()
+        valor_total_produto = custo_total_produto * (1 + acrescimos_result["imposto"]/100)
+        valor_total_produto = valor_total_produto * (1 + acrescimos_result["frete"]/100)
+        valor_total_produto = valor_total_produto * (1 + acrescimos_result["comissao"]/100)
+        valor_total_produto = valor_total_produto * (1 + acrescimos_result["lucro"]/100)
+    
+        produto = {
             "referencia": referencia,
             "montado": montado,
             "acrescimos": acrescimos_result,
@@ -358,8 +468,8 @@ def precificar_produto():
             "custos": custos_result,
             "custo_total": round(custo_total_produto, 4),
             "valor_total": round(valor_total_produto, 4)
-            }
-            produtos.append(produto)
+        }
+        produtos.append(produto)
     else:
         clear_screen()
         respostas = perguntas()
@@ -367,10 +477,11 @@ def precificar_produto():
         custos = calcular(respostas)  
         custos_result = [custos]  
         acrescimos_result = acrescimos()
-        custo_total_produto = custos['custo_total'] * (1 + acrescimos_result["imposto"]/100)
-        custo_total_produto = custo_total_produto * (1 + acrescimos_result["frete"]/100)
-        custo_total_produto = custo_total_produto * (1 + acrescimos_result["comissao"]/100)
-        valor_total_produto = custo_total_produto * (1 + acrescimos_result["lucro"]/100)
+        custo_total_produto = custos['custo_total']
+        valor_total_produto = custo_total_produto * (1 + acrescimos_result["imposto"]/100)
+        valor_total_produto = valor_total_produto * (1 + acrescimos_result["frete"]/100)
+        valor_total_produto = valor_total_produto * (1 + acrescimos_result["comissao"]/100)
+        valor_total_produto = valor_total_produto * (1 + acrescimos_result["lucro"]/100)
         produto = {
             "referencia": referencia,
             "montado": montado,
@@ -384,42 +495,65 @@ def precificar_produto():
 
     while True:
         clear_screen()
-        salvar_produto(produto)
+        try:
+            salvar_produto(produto)
+        except Exception as e:
+            print(f"Erro ao salvar produto: {e}")
+            continue
         opcao = input("Cadastro concluído com Sucesso!\n\n1. Relatório da peça\n2. Voltar ao menu\n\nEscolha uma opção: ")
         if opcao == "1":
+            clear_screen()
             gerar_relatorio(produtos)
         elif opcao == "2":
+            clear_screen()
             break
+        else:
+            clear_screen()
+            print("Resposta inválida. Por favor, escolha uma opção válida")
+            time.sleep(3)
 
 def perguntas():
     # Carregue os materiais do arquivo config.json
     with open('config.json', 'r') as f:
         config = json.load(f)
     materiais = {str(i+1): material for i, material in enumerate(config['materiais'].keys())}
+    materiais[str(len(materiais) + 1)] = 'Outro'
     valores = config['materiais']
- 
+
     # Perguntas que serão feitas para cada parte ou para o produto inteiro
     clear_screen()
     while True:
         clear_screen()
         try:
-            peso = float(input("Peso (kg): ").replace(',', '.'))
+            peso = float(input("Peso(g): ").replace(',', '.'))
             break
         except ValueError:
             print("Por favor, insira um número válido.")
-            time.sleep(5)
+            time.sleep(3)
     clear_screen()
     print("Material")
-    for key, value in materiais.items():
+    for key, value in sorted(materiais.items(), key=lambda item: item[0]):
         print(f"{key}. {value}")
     while True:
         material_escolhido = input("\n\nEscolha um material: ")
         if material_escolhido in materiais:
+            if materiais[material_escolhido] == 'Outro':
+                while True:
+                    try:
+                        valor_material = float(input("Insira o valor do material: "))
+                        if valor_material >= 0:
+                            valores['Outro'] = valor_material
+                            break
+                        else:
+                            print("Por favor, insira um valor maior ou igual que 0.")
+                    except ValueError:
+                        print("Por favor, insira um número válido.")
             break
         else:
             print("Por favor, escolha um material válido.")
-            time.sleep(5)
+            time.sleep(3)
     material = materiais[material_escolhido]
+    valor_material = valores[material]
     clear_screen()
     while True:
         clear_screen()
@@ -429,10 +563,10 @@ def perguntas():
                 break
             else:
                 print("Por favor, insira um número entre 0 e 1000.")
-                time.sleep(5)
+                time.sleep(3)
         except ValueError:
             print("Por favor, insira um número válido.")
-            time.sleep(5)
+            time.sleep(3)
     clear_screen()
     while True:
         clear_screen()
@@ -441,7 +575,7 @@ def perguntas():
             break
         except ValueError:
             print("Por favor, insira um número inteiro válido.")
-            time.sleep(5)
+            time.sleep(3)
     clear_screen()
     while True:
         clear_screen()
@@ -450,7 +584,7 @@ def perguntas():
             break
         except ValueError:
             print("Por favor, insira um número inteiro válido.")
-            time.sleep(5)
+            time.sleep(3)
     clear_screen()
     while True:
         clear_screen()
@@ -459,7 +593,7 @@ def perguntas():
             break
         else:
             print("Por favor, insira 1 para Metalizada ou 2 para Pintada.")
-            time.sleep(5)
+            time.sleep(3)
     clear_screen()
 
     # Retorne um dicionário com as respostas
@@ -495,10 +629,10 @@ def acrescimos():
                 break
             else:
                 print("Por favor, insira um número entre 0 e 100.")
-                time.sleep(5)
+                time.sleep(3)
         except ValueError:
             print("Por favor, insira um número válido.")
-            time.sleep(5)
+            time.sleep(3)
     while True:
         frete = input(f"Frete (padrão {frete_padrao}%): ")
         if not frete:
@@ -510,10 +644,10 @@ def acrescimos():
                 break
             else:
                 print("Por favor, insira um número entre 0 e 100.")
-                time.sleep(5)
+                time.sleep(3)
         except ValueError:
             print("Por favor, insira um número válido.")
-            time.sleep(5)
+            time.sleep(3)
     while True:
         comissao = input(f"Comissão (padrão {comissao_padrao}%): ")
         if not comissao:
@@ -525,28 +659,26 @@ def acrescimos():
                 break
             else:
                 print("Por favor, insira um número entre 0 e 100.")
-                time.sleep(5)
+                time.sleep(3)
         except ValueError:
             print("Por favor, insira um número válido.")
-            time.sleep(5)
+            time.sleep(3)
 
-    # Forçar a inserção de um lucro
     while True:
-        lucro = input("Lucro (%): ")
-        if lucro:
-            try:
-                lucro = float(lucro)
-                if 0 <= lucro <= 100:
-                    break
-                else:
-                    print("Por favor, insira um número entre 0 e 100.")
-                    time.sleep(5)
-            except ValueError:
-                print("Por favor, insira um número válido.")
-                time.sleep(5)
-        else:
-            print("É obrigatório definir uma margem de lucro.")
-            time.sleep(5)
+        lucro = input(f"Lucro (padrão {lucro_padrao}%): ")
+        if not lucro:
+            lucro = lucro_padrao
+            break
+        try:
+            lucro = float(lucro)
+            if 0 <= lucro <= 100:
+                break
+            else:
+                print("Por favor, insira um número entre 0 e 100.")
+                time.sleep(3)
+        except ValueError:
+            print("Por favor, insira um número válido.")
+            time.sleep(3)
 
     # Crie um dicionário com os acréscimos
     acrescimos = {
@@ -571,7 +703,8 @@ def calcular(respostas):
     custo_injecao = round(config['config_calcular']['custo_injecao'] / pecas_por_hora, 4)
 
     # Calcule o custo do material por hora
-    custo_material = round(respostas["peso"] * respostas["valor_material"], 4)
+    peso_kg = respostas["peso"] / 1000
+    custo_material = 0 if respostas["valor_material"] == 0 else round(peso_kg * respostas["valor_material"], 4)
 
     # Calcule o custo da pintura por peça
     if respostas["metalizado_ou_pintado"] == 1:
@@ -585,7 +718,6 @@ def calcular(respostas):
     # Calcule o custo total e o valor total
     custo_total = round(custo_injecao + custo_material + custo_pintura + mao_de_obra, 4)
     valor_total = custo_total
-
     # Retorne um dicionário com o custo e o valor da peça
     return {
         "pecas_por_hora": pecas_por_hora,
@@ -660,14 +792,14 @@ def alterar_configuracoes():
             break
         else:
             print("Por favor, escolha uma opção válida.")
-            time.sleep(5)
+            time.sleep(3)
 
     # Grava as novas configurações no arquivo config.json
     with open('config.json', 'w') as f:
         json.dump(config, f, indent=4)
 
     print("Configurações atualizadas com sucesso.")
-    time.sleep(5)
+    time.sleep(3)
     
 def adicionar_produto(produto):
     # Verificar se a referência do produto já existe
@@ -684,7 +816,7 @@ def adicionar_produto(produto):
     produtos.append(produto)
     salvar_produto(produtos) 
     print(f"Produto com referência {produto['Referencia']} adicionado com sucesso.")
-    time.sleep(5)
+    time.sleep(3)
 
 def modelo_importacao():
     # Definir as colunas do modelo
@@ -822,23 +954,35 @@ def importar_exportar():
     
 def gerar_relatorio(produtos):
     while True:
-        tipo_relatorio = input("\nQual tipo de relatório você deseja?\n1. Parcial\n2. Completo\n3. Voltar\n\nEscolha uma opção: ")
+        tipo_relatorio = input("Qual tipo de relatório você deseja?\n1. Parcial\n2. Completo\n3. Voltar\n\nEscolha uma opção: ")
         if tipo_relatorio == "1":
-            exibir_relatorio(produtos)
+            relatorio_parcial(produtos)
             break
         elif tipo_relatorio == "2":
-            exibir_relatorio_completo(produtos)
+            relatorio_completo(produtos)
             break
         elif tipo_relatorio == "3":
             break
         else:
             print("Por favor, escolha uma opção válida.")
-            time.sleep(5)
+            time.sleep(3)
 
-def exibir_relatorio(produtos):
+def relatorio_parcial(produtos):
     clear_screen()
     for i, produto in enumerate(produtos, start=1):
-        print(f"\nRelatório do Produto {produto['referencia']}")
+        print(f"Relatório do Produto {produto['referencia']}")
+        for j, resposta in enumerate(produto['respostas'], start=1):
+            print(f"\n{'Informações da Parte - ' + str(j) if produto['montado'] else 'Informações:'}\n")
+            print(f"Peso: {resposta['peso']} g")
+            print(f"Valor do material: R${resposta['valor_material']:.2f}")
+            print(f"Cavidades: {resposta['cavidades']}")
+            print(f"Tempo de ciclo: {resposta['tempo_ciclo']} segundos")
+            print(f"Peças por satélite: {resposta['pecas_por_satelite']}")
+            print(f"Metalizada ou Pintada: {'Pintada' if resposta['metalizado_ou_pintado'] == 2 else 'Metalizada'}")
+            for k, custo in enumerate(produto['custos'], start=1):
+                if k == j:
+                    if produto['montado']:
+                        print(f"\nCusto da peça: R${custo['custo_total']:.2f}")
         print("\nAcréscimos:")
         print(f"Imposto: {produto['acrescimos']['imposto']}%")
         print(f"Frete: {produto['acrescimos']['frete']}%")
@@ -847,33 +991,43 @@ def exibir_relatorio(produtos):
         print("\nTotais:")
         print(f"Custo total: R${produto['custo_total']:.2f}")
         print(f"Valor total: R${produto['valor_total']:.2f}")
-        for j, resposta in enumerate(produto['respostas'], start=1):
-            if produto['montado']:
-                print(f"\nInformações da Parte - {j}")
-                print(f"Peso: {resposta['peso']} kg")
-                print(f"Valor do material: R${resposta['valor_material']:.2f}")
-                print(f"Cavidades: {resposta['cavidades']}")
-                print(f"Tempo de ciclo: {resposta['tempo_ciclo']} segundos")
-                print(f"Peças por satélite: {resposta['pecas_por_satelite']}")
-                print(f"Metalizada ou Pintada: {'Pintada' if resposta['metalizado_ou_pintado'] == 1 else 'Metalizada'}")
-                print("\nTotal da Peça:")
-                print(f"Custo da peça: R${resposta['custo_total']:.2f}")
-                print(f"Valor da peça: R${resposta['valor_total']:.2f}")  
-            else:
-                print("\nInformações da Peça:")
-                print(f"Peso: {resposta['peso']} kg")
-                print(f"Valor do material: R${resposta['valor_material']:.2f}")
-                print(f"Cavidades: {resposta['cavidades']}")
-                print(f"Tempo de ciclo: {resposta['tempo_ciclo']} segundos")
-                print(f"Peças por satélite: {resposta['pecas_por_satelite']}")
-                print(f"Metalizada ou Pintada: {'Pintada' if resposta['metalizado_ou_pintado'] == 1 else 'Metalizada'}")
-                
+    
     input("\nPressione Enter para continuar...")
     
-def exibir_relatorio_completo(produtos):
+def relatorio_completo(produtos):
     clear_screen()
     for i, produto in enumerate(produtos, start=1):
-        print(f"\nRelatório Completo do Produto {produto['referencia']}")
+        print(f"Relatório Completo do Produto {produto['referencia']}")
+        for j, resposta in enumerate(produto['respostas'], start=1):
+            if produto['montado']:
+                print(f"\nInformações da Parte - {j}\n")
+            else:
+                print("\nInformações:")
+            print(f"Peso: {resposta['peso']} g")
+            print(f"Valor do material: R${resposta['valor_material']:.2f}")
+            print(f"Cavidades: {resposta['cavidades']}")
+            print(f"Tempo de ciclo: {resposta['tempo_ciclo']} segundos")
+            print(f"Peças por satélite: {resposta['pecas_por_satelite']}")
+            print(f"Metalizada ou Pintada: {'Pintada' if resposta['metalizado_ou_pintado'] == 2 else 'Metalizada'}")
+            if produto['montado']:
+                for k, custo in enumerate(produto['custos'], start=1):
+                    if k == j:
+                        print(f"\n{'Formação de custos da peça:' if produto['montado'] else 'Formação de custos:'}")
+                        print(f"Peças por hora: {custo['pecas_por_hora']}")
+                        print(f"Custo de injeção: R${custo['custo_injecao']:.2f}")
+                        print(f"Custo do material: R${custo['custo_material']:.2f}")
+                        print(f"Custo de pintura: R${custo['custo_pintura']:.2f}")
+                        print(f"Mão de obra: R${custo['mao_de_obra']:.2f}")
+                        print(f"Custo da peça: R${custo['custo_total']:.2f}")
+            else:
+                custo = produto['custos'][0] if isinstance(produto['custos'], list) else produto['custos']
+                print(f"\nFormação de custos:")
+                print(f"Peças por hora: {custo['pecas_por_hora']}")
+                print(f"Custo de injeção: R${custo['custo_injecao']:.2f}")
+                print(f"Custo do material: R${custo['custo_material']:.2f}")
+                print(f"Custo de pintura: R${custo['custo_pintura']:.2f}")
+                print(f"Mão de obra: R${custo['mao_de_obra']:.2f}")
+                        
         print("\nAcréscimos:")
         print(f"Imposto: {produto['acrescimos']['imposto']}%")
         print(f"Frete: {produto['acrescimos']['frete']}%")
@@ -882,41 +1036,7 @@ def exibir_relatorio_completo(produtos):
         print("\nTotais:")
         print(f"Custo total: R${produto['custo_total']:.2f}")
         print(f"Valor total: R${produto['valor_total']:.2f}")
-        for j, resposta in enumerate(produto['respostas'], start=1):
-            if produto['montado']:
-                print(f"\nInformações da Parte - {j}")
-                print(f"Peso: {resposta['peso']} kg")
-                print(f"Valor do material: R${resposta['valor_material']:.2f}")
-                print(f"Cavidades: {resposta['cavidades']}")
-                print(f"Tempo de ciclo: {resposta['tempo_ciclo']} segundos")
-                print(f"Peças por satélite: {resposta['pecas_por_satelite']}")
-                print(f"Metalizada ou Pintada: {'Pintada' if resposta['metalizado_ou_pintado'] == 1 else 'Metalizada'}")
-                print("\nTotal da Peça:")
-                print(f"Custo da peça: R${resposta['custo_total']:.2f}")
-                print(f"Valor da peça: R${resposta['valor_total']:.2f}")
-                for custo in produto['custos']:
-                    print("\nFormação de custos da peça:")
-                    print(f"Peças por hora: {custo['pecas_por_hora']}")
-                    print(f"Custo de injeção: R${custo['custo_injecao']:.2f}")
-                    print(f"Custo do material: R${custo['custo_material']:.2f}")
-                    print(f"Custo de pintura: R${custo['custo_pintura']:.2f}")
-                    print(f"Mão de obra: R${custo['mao_de_obra']:.2f}")
-            else:
-                print("\nInformações:")
-                print(f"Peso: {resposta['peso']} kg")
-                print(f"Valor do material: R${resposta['valor_material']:.2f}")
-                print(f"Cavidades: {resposta['cavidades']}")
-                print(f"Tempo de ciclo: {resposta['tempo_ciclo']} segundos")
-                print(f"Peças por satélite: {resposta['pecas_por_satelite']}")
-                print(f"Metalizada ou Pintada: {'Pintada' if resposta['metalizado_ou_pintado'] == 1 else 'Metalizada'}")
-                for custo in produto['custos']:
-                    print("\nFormação de custos da peça:")
-                    print(f"Peças por hora: {custo['pecas_por_hora']}")
-                    print(f"Custo de injeção: R${custo['custo_injecao']:.2f}")
-                    print(f"Custo do material: R${custo['custo_material']:.2f}")
-                    print(f"Custo de pintura: R${custo['custo_pintura']:.2f}")
-                    print(f"Mão de obra: R${custo['mao_de_obra']:.2f}")
-                
+    
     input("\nPressione Enter para continuar...")
     
 menu()
