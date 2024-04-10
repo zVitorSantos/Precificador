@@ -3,11 +3,13 @@ import os
 import sys
 import requests
 import subprocess
-from tkinter import Tk
-from tkinter.filedialog import askopenfilename, asksaveasfilename
-from datetime import datetime
 import pandas as pd
 import time
+
+# imports to import/export functions
+# from tkinter import Tk
+# from tkinter.filedialog import askopenfilename, asksaveasfilename
+# from datetime import datetime
 
 # *TODO: Preparar para salvar os produtos em um banco de dados
 # *TODO: Finalizar formulário de importação/exportação de produtos
@@ -802,155 +804,160 @@ def alterar_configuracoes():
     time.sleep(3)
     
 def adicionar_produto(produto):
-    # Verificar se a referência do produto já existe
-    produtos = carregar_produtos()
-    for p in produtos:
-        if 'Referencia' in p and 'Referencia' in produto and p['Referencia'] == produto['Referencia']:
-            print(f"Produto com referência {produto['Referencia']} já existe.")
-            return
-    # Calcular as informações que faltam
-    for resposta in produto['respostas']:
-        custos = calcular(resposta)
-        resposta.update(custos)
-    # Adicionar o produto
-    produtos.append(produto)
-    salvar_produto(produtos) 
-    print(f"Produto com referência {produto['Referencia']} adicionado com sucesso.")
-    time.sleep(3)
+    print("Essa função não está completa!")
+    time.sleep(5)
+    # # Verificar se a referência do produto já existe
+    # produtos = carregar_produtos()
+    # for p in produtos:
+    #     if 'Referencia' in p and 'Referencia' in produto and p['Referencia'] == produto['Referencia']:
+    #         print(f"Produto com referência {produto['Referencia']} já existe.")
+    #         return
+    # # Calcular as informações que faltam
+    # for resposta in produto['respostas']:
+    #     custos = calcular(resposta)
+    #     resposta.update(custos)
+    # # Adicionar o produto
+    # produtos.append(produto)
+    # salvar_produto(produtos) 
+    # print(f"Produto com referência {produto['Referencia']} adicionado com sucesso.")
+    # time.sleep(3)
 
 def modelo_importacao():
-    # Definir as colunas do modelo
-    colunas = ['Referencia', 'Material', 'Peso', 'Cavidades', 'Tempo Ciclo', 'Peças por Satélite', 'Metalizado ou Pintado']
-    # Criar um DataFrame com dois exemplos de produtos
-    data = {
-        'Referencia': ['EX1', 'EX2', 'EX2'],
-        'Material': ['PP', 'PP', 'ABS'],
-        'Peso': [0.005, 0.005, 0.001],
-        'Cavidades': [24, 24, 50],
-        'Tempo Ciclo': [15, 15, 8],
-        'Peças por Satélite': [700, 700, 1289],
-        'Metalizado ou Pintado': ['Metalizado', 'Metalizado', 'Pintado']
-    }
-    df = pd.DataFrame(data, columns=colunas)
-    # Abrir uma janela de diálogo para escolher onde salvar o arquivo
-    root = Tk()
-    root.withdraw()
-    root.attributes('-topmost', True)
-    arquivo = asksaveasfilename(defaultextension=".xlsx", initialfile="modelo_importacao", filetypes=[("Excel files", "*.xlsx")])
-    if not arquivo:  # Se o usuário cancelar a janela de diálogo
-        return
-    # Salvar o DataFrame como um arquivo .xlsx
-    df.to_excel(arquivo, index=False)
-    clear_screen()
-    print("Modelo de importação criado com sucesso.")
-    root.destroy()
+    print("Essa função não está completa!")
+    time.sleep(5)
+    # # Definir as colunas do modelo
+    # colunas = ['Referencia', 'Material', 'Peso', 'Cavidades', 'Tempo Ciclo', 'Peças por Satélite', 'Metalizado ou Pintado']
+    # # Criar um DataFrame com dois exemplos de produtos
+    # data = {
+    #     'Referencia': ['EX1', 'EX2', 'EX2'],
+    #     'Material': ['PP', 'PP', 'ABS'],
+    #     'Peso': [0.005, 0.005, 0.001],
+    #     'Cavidades': [24, 24, 50],
+    #     'Tempo Ciclo': [15, 15, 8],
+    #     'Peças por Satélite': [700, 700, 1289],
+    #     'Metalizado ou Pintado': ['Metalizado', 'Metalizado', 'Pintado']
+    # }
+    # df = pd.DataFrame(data, columns=colunas)
+    # # Abrir uma janela de diálogo para escolher onde salvar o arquivo
+    # root = Tk()
+    # root.withdraw()
+    # root.attributes('-topmost', True)
+    # arquivo = asksaveasfilename(defaultextension=".xlsx", initialfile="modelo_importacao", filetypes=[("Excel files", "*.xlsx")])
+    # if not arquivo:  # Se o usuário cancelar a janela de diálogo
+    #     return
+    # # Salvar o DataFrame como um arquivo .xlsx
+    # df.to_excel(arquivo, index=False)
+    # clear_screen()
+    # print("Modelo de importação criado com sucesso.")
+    # root.destroy()
 
 def importar_exportar():
-    # Carregue as configurações atuais do arquivo config.json
-    with open('config.json', 'r') as f:
-        config = json.load(f)
+    print("Essa função não está completa!")
+    time.sleep(5)
+    # # Carregue as configurações atuais do arquivo config.json
+    # with open('config.json', 'r') as f:
+    #     config = json.load(f)
         
-    opcao = input("1. Importar\n2. Exportar\n3. Voltar\n\nEscolha uma opção: ")
-    if opcao == "1":
-        clear_screen()
-        opcao_importacao = input("1. Baixar modelo de importação\n2. Importar arquivo\n\nEscolha uma opção: ")
-        if opcao_importacao == "1":
-            modelo_importacao()
-            input("\nPressione Enter para continuar...")
-        elif opcao_importacao == "2":
-            clear_screen()
-            root = Tk()
-            root.withdraw()
-            root.attributes('-topmost', True)
-            arquivo = askopenfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
-            if not arquivo:
-                return
+    # opcao = input("1. Importar\n2. Exportar\n3. Voltar\n\nEscolha uma opção: ")
+    # if opcao == "1":
+    #     clear_screen()
+    #     opcao_importacao = input("1. Baixar modelo de importação\n2. Importar arquivo\n\nEscolha uma opção: ")
+    #     if opcao_importacao == "1":
+    #         modelo_importacao()
+    #         input("\nPressione Enter para continuar...")
+    #     elif opcao_importacao == "2":
+    #         clear_screen()
+    #         root = Tk()
+    #         root.withdraw()
+    #         root.attributes('-topmost', True)
+    #         arquivo = askopenfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
+    #         if not arquivo:
+    #             return
             
-            # Ler o arquivo Excel ou CSV
-            if arquivo.endswith('.csv'):
-                df = pd.read_csv(arquivo)
-            elif arquivo.endswith('.xlsx'):
-                df = pd.read_excel(arquivo)
-            else:
-                print("Formato de arquivo não suportado.")
-                input("\nPressione Enter para continuar...")
-                return
+    #         # Ler o arquivo Excel ou CSV
+    #         if arquivo.endswith('.csv'):
+    #             df = pd.read_csv(arquivo)
+    #         elif arquivo.endswith('.xlsx'):
+    #             df = pd.read_excel(arquivo)
+    #         else:
+    #             print("Formato de arquivo não suportado.")
+    #             input("\nPressione Enter para continuar...")
+    #             return
             
-            # Use os valores carregados como padrões
-            imposto_padrao = config['config_acresimos']['imposto']
-            frete_padrao = config['config_acresimos']['frete']
-            comissao_padrao = config['config_acresimos']['comissao']
-            lucro_padrao = config['config_acresimos']['lucro']
+    #         # Use os valores carregados como padrões
+    #         imposto_padrao = config['config_acresimos']['imposto']
+    #         frete_padrao = config['config_acresimos']['frete']
+    #         comissao_padrao = config['config_acresimos']['comissao']
+    #         lucro_padrao = config['config_acresimos']['lucro']
             
-            produtos = []
+    #         produtos = []
             
-            # Iterar sobre os registros do DataFrame
-            for index, row in df.iterrows():
-                produto = {
-                    "referencia": row['Referencia'],
-                    "montado": False,
-                    "acrescimos": {
-                        "imposto": imposto_padrao,
-                        "frete": frete_padrao,
-                        "comissao": comissao_padrao,
-                        "lucro": lucro_padrao
-                    },
-                    "respostas": [
-                        {
-                            "peso": row['Peso'],
-                            "valor_material": config['materiais'][row['Material']],
-                            "cavidades": row['Cavidades'],
-                            "tempo_ciclo": row['Tempo Ciclo'],
-                            "pecas_por_satelite": row['Peças por Satélite'],
-                            "metalizado_ou_pintado": 1 if row['Metalizado ou Pintado'] == 'Metalizado' else 2
-                        }
-                    ],
-                    "custos": {
-                        "mao_de_obra": config['config_calcular']['mao_de_obra'],
-                        "custo_injecao": config['config_calcular']['custo_injecao'],
-                        "custo_pintura": config['config_calcular']['custo_pintura_metalizada'] if row['Metalizado ou Pintado'] == 'Metalizado' else config['config_calcular']['custo_pintura_normal'],
-                        "custo_material": row['Peso'] * config['materiais'][row['Material']]
-                    }
-                }
+    #         # Iterar sobre os registros do DataFrame
+    #         for index, row in df.iterrows():
+    #             produto = {
+    #                 "referencia": row['Referencia'],
+    #                 "montado": False,
+    #                 "acrescimos": {
+    #                     "imposto": imposto_padrao,
+    #                     "frete": frete_padrao,
+    #                     "comissao": comissao_padrao,
+    #                     "lucro": lucro_padrao
+    #                 },
+    #                 "respostas": [
+    #                     {
+    #                         "peso": row['Peso'],
+    #                         "valor_material": config['materiais'][row['Material']],
+    #                         "cavidades": row['Cavidades'],
+    #                         "tempo_ciclo": row['Tempo Ciclo'],
+    #                         "pecas_por_satelite": row['Peças por Satélite'],
+    #                         "metalizado_ou_pintado": 1 if row['Metalizado ou Pintado'] == 'Metalizado' else 2
+    #                     }
+    #                 ],
+    #                 "custos": {
+    #                     "mao_de_obra": config['config_calcular']['mao_de_obra'],
+    #                     "custo_injecao": config['config_calcular']['custo_injecao'],
+    #                     "custo_pintura": config['config_calcular']['custo_pintura_metalizada'] if row['Metalizado ou Pintado'] == 'Metalizado' else config['config_calcular']['custo_pintura_normal'],
+    #                     "custo_material": row['Peso'] * config['materiais'][row['Material']]
+    #                 }
+    #             }
                 
-                produto['custo_total'] = sum(produto['custos'].values())
-                produto['valor_total'] = produto['custo_total'] * (1 + sum(produto['acrescimos'].values()) / 100)
+    #             produto['custo_total'] = sum(produto['custos'].values())
+    #             produto['valor_total'] = produto['custo_total'] * (1 + sum(produto['acrescimos'].values()) / 100)
                 
-                produtos.append(produto)
+    #             produtos.append(produto)
             
-            # Adicionar os produtos processados ao sistema
-            for produto in produtos:
-                adicionar_produto(produto)
+    #         # Adicionar os produtos processados ao sistema
+    #         for produto in produtos:
+    #             adicionar_produto(produto)
             
-            root.destroy()
-        else:
-            clear_screen()
-            print("Opção inválida.")
-            input("\nPressione Enter para continuar...")
-    elif opcao == "2":
-        clear_screen()
-        # Obter a data e a hora atual e formatá-las como uma string
-        agora = datetime.now()
-        arquivo = "Export-" + agora.strftime("%Y%m%d_%H%M%S")
-        produtos = carregar_produtos()
-        df = pd.json_normalize(produtos, record_path='respostas', meta=['referencia', 'montado', 'acrescimos', 'custos', 'custo_total', 'valor_total'])
-        # Adicionar a extensão .csv ao nome do arquivo
-        arquivo_csv = arquivo + '.csv'
-        root = Tk()
-        root.withdraw()
-        root.attributes('-topmost', True) 
-        arquivo_csv = asksaveasfilename(defaultextension=".csv", initialfile=arquivo_csv, filetypes=[("CSV files", "*.csv")])  # Mostra uma janela de diálogo 'Salvar como'
-        if not arquivo_csv:
-            return
-        df.to_csv(arquivo_csv, index=False)
-        root.destroy() 
-    elif opcao == "3":
-        clear_screen()
-        return
-    else:
-        clear_screen()
-        print("Opção inválida.")
-        input("\nPressione Enter para continuar...")
+    #         root.destroy()
+    #     else:
+    #         clear_screen()
+    #         print("Opção inválida.")
+    #         input("\nPressione Enter para continuar...")
+    # elif opcao == "2":
+    #     clear_screen()
+    #     # Obter a data e a hora atual e formatá-las como uma string
+    #     arquivo = "Export"
+    #     produtos = carregar_produtos()
+    #     df = pd.json_normalize(produtos, record_path='respostas', meta=['referencia', 'montado', 'acrescimos', 'custos', 'custo_total', 'valor_total'])
+    #     # Adicionar a extensão .csv ao nome do arquivo
+    #     arquivo_csv = arquivo + '.csv'
+    #     root = Tk()
+    #     root.withdraw()
+    #     root.attributes('-topmost', True) 
+    #     arquivo_csv = asksaveasfilename(defaultextension=".csv", initialfile=arquivo_csv, filetypes=[("CSV files", "*.csv")])  # Mostra uma janela de diálogo 'Salvar como'
+    #     if not arquivo_csv:
+    #         return
+    #     df.to_csv(arquivo_csv, index=False)
+    #     root.destroy() 
+    # elif opcao == "3":
+    #     clear_screen()
+    #     return
+    # else:
+    #     clear_screen()
+    #     print("Opção inválida.")
+    #     input("\nPressione Enter para continuar...")
     
 def gerar_relatorio(produtos):
     while True:
