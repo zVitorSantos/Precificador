@@ -4,12 +4,9 @@ import sys
 import requests
 import subprocess
 import time
-
-# imports to import/export functions
-# from tkinter import Tk
-# from tkinter.filedialog import askopenfilename, asksaveasfilename
-# from datetime import datetime
-# import pandas as pd
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename, asksaveasfilename
+import pandas as pd
 
 # *TODO: Preparar para salvar os produtos em um banco de dados
 # *TODO: Finalizar formulário de importação/exportação de produtos
@@ -75,7 +72,7 @@ def menu():
                 clear_screen()
                 print("Configurações\n")
                 print("1. Valores Padrões")
-                print("2. Importar/Exportar(não finalizada)")
+                print("2. Importar")
                 print("3. Info")
                 print("4. Voltar")
                 opcao_config = input("\nEscolha uma opção: ")
@@ -83,7 +80,7 @@ def menu():
                 if opcao_config == "1":
                     alterar_configuracoes()
                 elif opcao_config == "2":
-                    importar_exportar()
+                    importar()
                 elif opcao_config == "3":
                     show_info()
                 elif opcao_config == "4":
@@ -131,16 +128,16 @@ def salvar_produto(produto):
         produtos = []
     except json.JSONDecodeError:
         print("Erro ao decodificar o JSON.")
-        return
-    except Exception as e:
-        print(f"Erro desconhecido: {e}")
-        return
+        produtos = []
 
-    produtos.append(produto)
+    if isinstance(produto, list):
+        produtos.extend(produto)
+    else:
+        produtos.append(produto)
 
     try:
         with open('produtos.json', 'w') as f:
-            json.dump(produtos, f, indent=4)
+            f.write(json.dumps(produtos, indent=4))
     except Exception as e:
         print(f"Erro ao escrever no arquivo: {e}")
         
@@ -285,11 +282,16 @@ def atualizar_produto(referencia):
 def carregar_produtos():
     try:
         with open('produtos.json', 'r') as f:
-            return json.load(f)
+            data = f.read()
+            return json.loads(data) if data else []
     except FileNotFoundError:
+        with open('produtos.json', 'w') as f:
+            f.write('[]')
         return []
     except json.JSONDecodeError:
         print("Erro ao decodificar o JSON.")
+        with open('produtos.json', 'w') as f:
+            f.write('[]')
         return []
     
 def exibir_cadastrados():
@@ -719,7 +721,7 @@ def calcular(respostas):
 
     # Calcule o custo total e o valor total
     custo_total = round(custo_injecao + custo_material + custo_pintura + mao_de_obra, 4)
-    valor_total = custo_total
+    
     # Retorne um dicionário com o custo e o valor da peça
     return {
         "pecas_por_hora": pecas_por_hora,
@@ -728,7 +730,6 @@ def calcular(respostas):
         "custo_pintura": custo_pintura,
         "mao_de_obra": mao_de_obra,
         "custo_total": custo_total,
-        "valor_total": valor_total
     }
 
 def alterar_configuracoes():
@@ -802,162 +803,144 @@ def alterar_configuracoes():
 
     print("Configurações atualizadas com sucesso.")
     time.sleep(3)
-    
+
 def adicionar_produto(produto):
-    print("Essa função não está completa!")
-    time.sleep(5)
-    # # Verificar se a referência do produto já existe
-    # produtos = carregar_produtos()
-    # for p in produtos:
-    #     if 'Referencia' in p and 'Referencia' in produto and p['Referencia'] == produto['Referencia']:
-    #         print(f"Produto com referência {produto['Referencia']} já existe.")
-    #         return
-    # # Calcular as informações que faltam
-    # for resposta in produto['respostas']:
-    #     custos = calcular(resposta)
-    #     resposta.update(custos)
-    # # Adicionar o produto
-    # produtos.append(produto)
-    # salvar_produto(produtos) 
-    # print(f"Produto com referência {produto['Referencia']} adicionado com sucesso.")
-    # time.sleep(3)
+    produtos = carregar_produtos()
+    produto_existente = False
+    log_messages = []
+    for p in produtos:
+        if p['referencia'] == produto['referencia']:
+            if produto['montado']:
+                p['respostas'].extend(produto['respostas'])
+                p['custos'].extend(produto['custos'])
+                message = f"Peça adicionada à referência {produto['referencia']}."
+                log_messages.append(message)
+                produto_existente = True
+            else:
+                message = f"Produto com referência {produto['referencia']} já existe."
+                log_messages.append(message)
+    if not produto_existente:
+        produtos.append(produto)
+    with open('produtos.json', 'w') as f:
+        json.dump(produtos, f, indent=4)
+    message = f"Produto com referência {produto['referencia']} adicionado com sucesso."
+    log_messages.append(message)
+    
+    return log_messages
 
-def modelo_importacao():
-    print("Essa função não está completa!")
-    time.sleep(5)
-    # # Definir as colunas do modelo
-    # colunas = ['Referencia', 'Material', 'Peso', 'Cavidades', 'Tempo Ciclo', 'Peças por Satélite', 'Metalizado ou Pintado']
-    # # Criar um DataFrame com dois exemplos de produtos
-    # data = {
-    #     'Referencia': ['EX1', 'EX2', 'EX2'],
-    #     'Material': ['PP', 'PP', 'ABS'],
-    #     'Peso': [0.005, 0.005, 0.001],
-    #     'Cavidades': [24, 24, 50],
-    #     'Tempo Ciclo': [15, 15, 8],
-    #     'Peças por Satélite': [700, 700, 1289],
-    #     'Metalizado ou Pintado': ['Metalizado', 'Metalizado', 'Pintado']
-    # }
-    # df = pd.DataFrame(data, columns=colunas)
-    # # Abrir uma janela de diálogo para escolher onde salvar o arquivo
-    # root = Tk()
-    # root.withdraw()
-    # root.attributes('-topmost', True)
-    # arquivo = asksaveasfilename(defaultextension=".xlsx", initialfile="modelo_importacao", filetypes=[("Excel files", "*.xlsx")])
-    # if not arquivo:  # Se o usuário cancelar a janela de diálogo
-    #     return
-    # # Salvar o DataFrame como um arquivo .xlsx
-    # df.to_excel(arquivo, index=False)
-    # clear_screen()
-    # print("Modelo de importação criado com sucesso.")
-    # root.destroy()
-
-def importar_exportar():
-    print("Essa função não está completa!")
-    time.sleep(5)
-    # # Carregue as configurações atuais do arquivo config.json
-    # with open('config.json', 'r') as f:
-    #     config = json.load(f)
+def importar():
+    # Carregue as configurações atuais do arquivo config.json
+    with open('config.json', 'r') as f:
+        config = json.load(f)
         
-    # opcao = input("1. Importar\n2. Exportar\n3. Voltar\n\nEscolha uma opção: ")
-    # if opcao == "1":
-    #     clear_screen()
-    #     opcao_importacao = input("1. Baixar modelo de importação\n2. Importar arquivo\n\nEscolha uma opção: ")
-    #     if opcao_importacao == "1":
-    #         modelo_importacao()
-    #         input("\nPressione Enter para continuar...")
-    #     elif opcao_importacao == "2":
-    #         clear_screen()
-    #         root = Tk()
-    #         root.withdraw()
-    #         root.attributes('-topmost', True)
-    #         arquivo = askopenfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
-    #         if not arquivo:
-    #             return
+    opcao = input("1. Importar\n2. Modelo de Importação\n3. Voltar\n\nEscolha uma opção: ")
+    if opcao == "1":
+        clear_screen()
+        root = Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+        arquivo = askopenfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
+        if not arquivo:
+            return
+        
+        # Ler o arquivo Excel
+        if arquivo.endswith('.xlsx'):
+            df = pd.read_excel(arquivo)
+            df['Montado'] = df['Montado'].astype(bool)
+        else:
+            print("Formato de arquivo não suportado.")
+            input("\nPressione Enter para continuar...")
+            return
+        
+        # Aplicar acréscimos ao custo total de todos os produtos
+        acrescimos_result = {
+            "imposto":  config['config_acresimos']['imposto'],
+            "frete": config['config_acresimos']['frete'],
+            "comissao": config['config_acresimos']['comissao'],
+            "lucro": config['config_acresimos']['lucro']
+        }
+        
+        produtos = []
+        custo_total_produtos = 0
+        for index, row in df.iterrows():
+            respostas = {
+                "peso": row['Peso'],
+                "valor_material": config['materiais'][row['Material'].strip()],
+                "cavidades": row['Cavidades'],
+                "tempo_ciclo": row['Tempo Ciclo'],
+                "pecas_por_satelite": row['Peças por Satélite'],
+                "metalizado_ou_pintado": 1 if row['Metalizado ou Pintado'] == 'Metalizado' else 2
+            }
+            custos = calcular(respostas)
+            custo_total_produto = custos['custo_total']
+        
+            produto = {
+                "referencia": row['Referencia'],
+                "montado": row['Montado'],
+                "respostas": [respostas],
+                "custos": [custos],
+                "acrescimos": acrescimos_result,
+                "custo_total": round(custo_total_produto, 4),
+                "valor_total": round(custo_total_produto * (1 + sum(acrescimos_result.values()) / 100), 4)
+            }
+            produtos.append(produto)
             
-    #         # Ler o arquivo Excel ou CSV
-    #         if arquivo.endswith('.csv'):
-    #             df = pd.read_csv(arquivo)
-    #         elif arquivo.endswith('.xlsx'):
-    #             df = pd.read_excel(arquivo)
-    #         else:
-    #             print("Formato de arquivo não suportado.")
-    #             input("\nPressione Enter para continuar...")
-    #             return
-            
-    #         # Use os valores carregados como padrões
-    #         imposto_padrao = config['config_acresimos']['imposto']
-    #         frete_padrao = config['config_acresimos']['frete']
-    #         comissao_padrao = config['config_acresimos']['comissao']
-    #         lucro_padrao = config['config_acresimos']['lucro']
-            
-    #         produtos = []
-            
-    #         # Iterar sobre os registros do DataFrame
-    #         for index, row in df.iterrows():
-    #             produto = {
-    #                 "referencia": row['Referencia'],
-    #                 "montado": False,
-    #                 "acrescimos": {
-    #                     "imposto": imposto_padrao,
-    #                     "frete": frete_padrao,
-    #                     "comissao": comissao_padrao,
-    #                     "lucro": lucro_padrao
-    #                 },
-    #                 "respostas": [
-    #                     {
-    #                         "peso": row['Peso'],
-    #                         "valor_material": config['materiais'][row['Material']],
-    #                         "cavidades": row['Cavidades'],
-    #                         "tempo_ciclo": row['Tempo Ciclo'],
-    #                         "pecas_por_satelite": row['Peças por Satélite'],
-    #                         "metalizado_ou_pintado": 1 if row['Metalizado ou Pintado'] == 'Metalizado' else 2
-    #                     }
-    #                 ],
-    #                 "custos": {
-    #                     "mao_de_obra": config['config_calcular']['mao_de_obra'],
-    #                     "custo_injecao": config['config_calcular']['custo_injecao'],
-    #                     "custo_pintura": config['config_calcular']['custo_pintura_metalizada'] if row['Metalizado ou Pintado'] == 'Metalizado' else config['config_calcular']['custo_pintura_normal'],
-    #                     "custo_material": row['Peso'] * config['materiais'][row['Material']]
-    #                 }
-    #             }
-                
-    #             produto['custo_total'] = sum(produto['custos'].values())
-    #             produto['valor_total'] = produto['custo_total'] * (1 + sum(produto['acrescimos'].values()) / 100)
-                
-    #             produtos.append(produto)
-            
-    #         # Adicionar os produtos processados ao sistema
-    #         for produto in produtos:
-    #             adicionar_produto(produto)
-            
-    #         root.destroy()
-    #     else:
-    #         clear_screen()
-    #         print("Opção inválida.")
-    #         input("\nPressione Enter para continuar...")
-    # elif opcao == "2":
-    #     clear_screen()
-    #     # Obter a data e a hora atual e formatá-las como uma string
-    #     arquivo = "Export"
-    #     produtos = carregar_produtos()
-    #     df = pd.json_normalize(produtos, record_path='respostas', meta=['referencia', 'montado', 'acrescimos', 'custos', 'custo_total', 'valor_total'])
-    #     # Adicionar a extensão .csv ao nome do arquivo
-    #     arquivo_csv = arquivo + '.csv'
-    #     root = Tk()
-    #     root.withdraw()
-    #     root.attributes('-topmost', True) 
-    #     arquivo_csv = asksaveasfilename(defaultextension=".csv", initialfile=arquivo_csv, filetypes=[("CSV files", "*.csv")])  # Mostra uma janela de diálogo 'Salvar como'
-    #     if not arquivo_csv:
-    #         return
-    #     df.to_csv(arquivo_csv, index=False)
-    #     root.destroy() 
-    # elif opcao == "3":
-    #     clear_screen()
-    #     return
-    # else:
-    #     clear_screen()
-    #     print("Opção inválida.")
-    #     input("\nPressione Enter para continuar...")
+        valor_total_produtos = custo_total_produtos
+        for key, value in acrescimos_result.items():
+            valor_total_produtos *= (1 + value / 100)
+        
+        log_messages = []  
+
+        # Adicionar os produtos processados ao sistema
+        for produto in produtos:
+            produto["acrescimos"] = acrescimos_result
+            produto["custo_total"] = round(custo_total_produtos, 4)
+            produto["valor_total"] = round(valor_total_produtos, 4)
+            log_messages.extend(adicionar_produto(produto))
+
+        # Imprimir todas as mensagens de log no final
+        print("\n".join(log_messages))
+        input("\nPressione Enter para continuar...")
+
+        root.destroy()
+    elif opcao == "2":
+        modelo_importacao()
+        clear_screen()
+        return
+    elif opcao == "3":
+        clear_screen()
+        return
+    else:
+        clear_screen()
+        print("Opção inválida.")
+        input("\nPressione Enter para continuar...")
+        
+def modelo_importacao():
+    # Definir as colunas do modelo
+    colunas = ['Referencia', 'Montado', 'Material', 'Peso', 'Cavidades', 'Tempo Ciclo', 'Peças por Satélite', 'Metalizado ou Pintado']
+    # Criar um DataFrame com dois exemplos de produtos
+    data = {
+        'Referencia': ['EX1', 'EX2', 'EX2'],
+        'Material': ['PP', 'PP', 'ABS'],
+        'Peso': [0.005, 0.005, 0.001],
+        'Cavidades': [24, 24, 50],
+        'Tempo Ciclo': [15, 15, 8],
+        'Peças por Satélite': [700, 700, 1289],
+        'Metalizado ou Pintado': ['Metalizado', 'Metalizado', 'Pintado']
+    }
+    df = pd.DataFrame(data, columns=colunas)
+    # Abrir uma janela de diálogo para escolher onde salvar o arquivo
+    root = Tk()
+    root.withdraw()
+    root.attributes('-topmost', True)
+    arquivo = asksaveasfilename(defaultextension=".xlsx", initialfile="modelo_importacao", filetypes=[("Excel files", "*.xlsx")])
+    if not arquivo:  # Se o usuário cancelar a janela de diálogo
+        return
+    # Salvar o DataFrame como um arquivo .xlsx
+    df.to_excel(arquivo, index=False)
+    clear_screen()
+    print("Modelo de importação criado com sucesso.")
+    root.destroy()
     
 def gerar_relatorio(produtos):
     while True:
